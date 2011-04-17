@@ -1,0 +1,9 @@
+Number of nodes
+2
+Nodes description, number of neighbours, ids, and channel infos.
+Note that channel info is stored only for the smallest node id.
+1 1 20
+0  // And despite of zero number here, second node still has egde with first node.
+
+Sanity check
+-1
