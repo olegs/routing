@@ -24,9 +24,9 @@ public class Main {
         props.setProperty(Profile.GUI, "true");
         final Profile p = new ProfileImpl(props);
         // Start a new JADE runtime system
-        final AgentContainer container = Runtime.instance().createAgentContainer(p);
-        // Now we have successfully launched Agents platform
+        final AgentContainer container = Runtime.instance().createMainContainer(p);
 
+        // Now we have successfully launched Agents platform
         final String fileName = "C:/work/routing/tests/org/vika/routing/network/network.txt";
         final Node[] nodes = Parser.parse(fileName);
         final Network network = new Network(nodes);
