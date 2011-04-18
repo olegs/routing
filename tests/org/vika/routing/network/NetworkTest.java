@@ -12,7 +12,7 @@ import java.util.Map;
 public class NetworkTest extends TestCase {
     public void testSimple() throws IOException {
         final Node[] nodes = Parser.parse("C:/work/routing/tests/org/vika/routing/network/neuronetwork.txt");
-        final Network network = new Network(nodes);
+        final NeuroNetwork network = new NeuroNetwork(nodes);
         final StringBuilder builder = new StringBuilder();
         for (NeuroNode neuroNode : network.neuroNodes) {
             if (builder.length() > 0 && neuroNode.wValues.size() > 0){
