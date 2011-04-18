@@ -2,7 +2,6 @@ package org.vika.routing;
 
 import jade.core.*;
 import jade.core.Runtime;
-import jade.domain.AMSService;
 import jade.util.ExtendedProperties;
 import jade.util.leap.Properties;
 import jade.wrapper.*;
@@ -18,7 +17,7 @@ import java.io.*;
  * @author oleg
  */
 public class Main {
-    public static void main(String[] args) throws IOException, StaleProxyException {
+    public static void main(String[] args) throws IOException, ControllerException {
         // Create empty profile
         final Properties props = new ExtendedProperties();
         props.setProperty(Profile.GUI, "true");
@@ -38,8 +37,11 @@ public class Main {
             final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
             nodeAgents[i] = nodeAgent;
             // Register agents
-            container.acceptNewAgent("agent" + i, nodeAgent);
+            container.acceptNewAgent("agent" + i, nodeAgent).start();
         }
+
+        final Emulator emulator = new Emulator(network, nodeAgents, routingManager, loadManager);
+        emulator.emulate();
     }
 
 }

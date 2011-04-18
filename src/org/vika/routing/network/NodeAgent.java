@@ -1,12 +1,15 @@
 package org.vika.routing.network;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.AMSService;
 import jade.domain.FIPAAgentManagement.AMSAgentDescription;
+import jade.domain.FIPAAgentManagement.SearchConstraints;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import jade.tools.testagent.ReceiveCyclicBehaviour;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
 import org.vika.routing.RoutingManager;
@@ -35,8 +38,7 @@ public class NodeAgent extends Agent {
 
     public void setup() {
         System.out.println("Agent " + getAID().getName() + " is ready.");
-        addBehaviour(new CyclicBehaviour(this)
-        {
+        addBehaviour(new CyclicBehaviour(this) {
             public void action() {
                 ACLMessage msg = receive();
                 if (msg != null) {
@@ -66,7 +68,7 @@ public class NodeAgent extends Agent {
      */
     public void sendMessage(final int receiver, final Message message){
         final AMSAgentDescription agent = findAMSAgentDescription(receiver);
-        ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.addReceiver(agent.getName());
         try {
             msg.setContentObject(message);
@@ -77,13 +79,10 @@ public class NodeAgent extends Agent {
     }
 
     private AMSAgentDescription findAMSAgentDescription(final int id) {
-        try {
-            final AMSAgentDescription description = new AMSAgentDescription();
-            description.setName(myAgents[id].getAID());
-            return AMSService.search(this, description)[0];
-        } catch (FIPAException e) {
-            return null;
-        }
+        final AMSAgentDescription description = new AMSAgentDescription();
+        final AID aid = myAgents[id].getAID();
+        description.setName(aid);
+        return description;
     }
 
     public int getId() {

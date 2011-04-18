@@ -19,6 +19,9 @@ public class RoutingManager {
     }
 
     public void route(final NodeAgent agent, final Message message) {
+        // Ask load manager to process message received
+        myLoadManager.messageReceived(agent, message);
+
         final int agentId = agent.getId();
         if (agentId == message.receiver){
             System.out.println("Agent " + agentId + " successfully received message: " + message.message);

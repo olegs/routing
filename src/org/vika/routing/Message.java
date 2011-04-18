@@ -8,4 +8,9 @@ import java.io.Serializable;
 public class Message implements Serializable {
     public String message;
     public int receiver;
+
+    public Message(final int r, final String m) {
+        receiver = r;
+        message = m;
+    }
 }
