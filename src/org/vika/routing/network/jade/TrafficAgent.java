@@ -22,7 +22,7 @@ public class TrafficAgent extends Agent {
         addBehaviour(new CyclicBehaviour(this) {
             public void action() {
                 while (!myTrafficManager.end()){
-                    final int delay = myTrafficManager.getDelay();
+                    final int delay = (int) myTrafficManager.getDelay();
                     final int initialAgent = myTrafficManager.getInitialAgent();
                     final Message message = myTrafficManager.getMessage();
                     AgentsUtil.sendMessage(myAgents, initialAgent, message);

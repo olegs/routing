@@ -11,8 +11,8 @@ import java.util.Map;
 public class NeuroNetwork extends Network {
     public NeuroNode[] neuroNodes;
 
-    public NeuroNetwork(final Node[] nodes) {
-        super(nodes, edges);
+    public NeuroNetwork(Network n) {
+        super(n.nodes, n.edges);
         neuroNodes = buildWValues(nodes);
     }
 

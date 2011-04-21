@@ -50,7 +50,7 @@ public class Main {
         }
 
         // Initiate and start traffic agent
-        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, 1000, 1000000);
+        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, 100, 1000000);
         final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic));
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
     }

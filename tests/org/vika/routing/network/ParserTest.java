@@ -9,7 +9,7 @@ import java.io.IOException;
  */
 public class ParserTest extends TestCase {
     public void testParsing() throws IOException {
-        final Node[] nodes = Parser.parse("C:/work/routing/tests/org/vika/routing/network/network.txt");
+        final Node[] nodes = Parser.parse("C:/work/routing/tests/org/vika/routing/network/network.txt").nodes;
         assertEquals(2, nodes.length);
         assertEquals(0, nodes[0].id);
         assertEquals(1, nodes[0].adjacentNodes.size());
