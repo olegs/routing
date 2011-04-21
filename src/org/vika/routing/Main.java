@@ -38,9 +38,15 @@ public class Main {
         final LoadManager.Load load = LoadManager.generate(1000, nodes.length, network.edges, 10, 10);
         final LoadManager loadManager = new LoadManager(load);
 
-        // Create JADE backend
+
+        // Create routing manager
         final RoutingManager routingManager = new RoutingManager(network, loadManager);
 
+        // Initiate traffic agent
+        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, 100, 1000000);
+        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic));
+
+        // Create JADE backend
         // Register all the agents according to the network
         for (int i = 0; i < nodes.length; i++) {
             final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
@@ -48,10 +54,6 @@ public class Main {
             // Register agents
             container.acceptNewAgent("agent" + i, nodeAgent).start();
         }
-
-        // Initiate and start traffic agent
-        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, 100, 1000000);
-        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic));
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
     }
 
