@@ -1,11 +1,9 @@
 package org.vika.routing.network;
 
-import com.sun.org.apache.xpath.internal.NodeSet;
 import com.sun.tools.javac.util.Pair;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -14,7 +12,7 @@ import java.util.Scanner;
  * @author oleg
  */
 public class Parser {
-    public static Node[] parse(final String fileName) throws IOException {
+    public static Network parse(final String fileName) throws IOException {
         final FileInputStream stream = new FileInputStream(fileName);
         try {
             final Scanner scanner = new Scanner(stream);
@@ -35,7 +33,7 @@ public class Parser {
                 nodes[pair.fst].adjacentNodes.put(pair.snd, channel);
                 nodes[pair.snd].adjacentNodes.put(pair.fst, channel);
             }
-            return nodes;
+            return new Network(nodes, edges);
         } finally {
             stream.close();
         }

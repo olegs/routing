@@ -30,10 +30,13 @@ public class Main {
 
         // Now we have successfully launched Agents platform
         final String fileName = "C:/work/routing/tests/org/vika/routing/network/network.txt";
-        final Node[] nodes = Parser.parse(fileName);
-        final Network network = new Network(nodes);
+        final Network network = Parser.parse(fileName);
+        final Node[] nodes = network.nodes;
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
-        final LoadManager loadManager = new LoadManager();
+
+        // Generate random system load
+        final LoadManager.Load load = LoadManager.generate(1000, nodes.length, network.edges, 10, 10);
+        final LoadManager loadManager = new LoadManager(load);
 
         // Create JADE backend
         final RoutingManager routingManager = new RoutingManager(network, loadManager);

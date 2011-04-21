@@ -12,7 +12,7 @@ public class NeuroNetwork extends Network {
     public NeuroNode[] neuroNodes;
 
     public NeuroNetwork(final Node[] nodes) {
-        super(nodes);
+        super(nodes, edges);
         neuroNodes = buildWValues(nodes);
     }
 
