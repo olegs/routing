@@ -17,13 +17,15 @@ public class TrafficManager {
 
     public static List<TrafficEvent> generate(final int nodes, final int messages, final long time){
         final List<TrafficEvent>  result = new ArrayList<TrafficEvent>();
-        final long timeConsumed = 0;
+        long timeConsumed = 0;
+        final long singeDelayTreshold = time / messages * 2;
         for (int i=0;i<messages;i++) {
             final int randomStart = Math.round((float)Math.random() * nodes);
             final int randomTarget = Math.round((float)Math.random() * nodes);
             final String message = "Message["+ i +"]";
             final long randomDelay = i == messages - 1 ?
-                    time - timeConsumed : Math.round((float)Math.random() * (time - timeConsumed));
+                    time - timeConsumed : Math.round((float)Math.random() * singeDelayTreshold);
+            timeConsumed += randomDelay;
             result.add(new TrafficEvent(randomStart, randomDelay, new Message(randomTarget, message)));
         }
         return result;
