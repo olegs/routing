@@ -25,7 +25,7 @@ public class AgentsUtil {
         } catch (IOException e) {
             // Ignore this
         }
-        send(msg);
+        agents[receiver].send(msg);
     }
 
     static AMSAgentDescription findAMSAgentDescription(final Agent[] agents, final int id) {
