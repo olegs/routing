@@ -14,6 +14,7 @@ import org.vika.routing.network.jade.NodeAgent;
 import org.vika.routing.network.jade.TrafficAgent;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author oleg
@@ -33,7 +34,10 @@ public class Main {
         final Network network = new Network(nodes);
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
         final LoadManager loadManager = new LoadManager();
+
+        // Create JADE backend
         final RoutingManager routingManager = new RoutingManager(network, loadManager);
+
         // Register all the agents according to the network
         for (int i = 0; i < nodes.length; i++) {
             final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
@@ -43,7 +47,8 @@ public class Main {
         }
 
         // Initiate and start traffic agent
-        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager());
+        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, 1000, 1000000);
+        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic));
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
     }
 
