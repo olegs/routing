@@ -1,15 +1,11 @@
-package org.vika.routing.network;
+package org.vika.routing.network.jade;
 
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.domain.AMSService;
 import jade.domain.FIPAAgentManagement.AMSAgentDescription;
-import jade.domain.FIPAAgentManagement.SearchConstraints;
-import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
-import jade.tools.testagent.ReceiveCyclicBehaviour;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
 import org.vika.routing.RoutingManager;

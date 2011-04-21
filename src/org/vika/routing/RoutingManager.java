@@ -2,7 +2,7 @@ package org.vika.routing;
 
 import org.vika.routing.network.Channel;
 import org.vika.routing.network.Network;
-import org.vika.routing.network.NodeAgent;
+import org.vika.routing.network.jade.NodeAgent;
 
 import java.util.Map;
 

@@ -1,6 +1,6 @@
 package org.vika.routing;
 
-import org.vika.routing.network.NodeAgent;
+import org.vika.routing.network.jade.NodeAgent;
 
 /**
  * @author oleg

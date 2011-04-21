@@ -1,34 +1,27 @@
 package org.vika.routing;
 
-import org.vika.routing.network.Network;
-import org.vika.routing.network.NodeAgent;
+import jade.wrapper.AgentContainer;
+import jade.wrapper.StaleProxyException;
+import org.vika.routing.network.jade.NodeAgent;
 
 /**
  * @author oleg
  * @date 18.04.11
  */
 public class Emulator {
-    private final Network myNetwork;
+    private final AgentContainer myContainer;
     private final NodeAgent[] myNodeAgents;
-    private final RoutingManager myRoutingManager;
-    private final LoadManager myLoadManager;
+    private final TrafficManager myTrafficManager;
 
-    public Emulator(final Network network, final NodeAgent[] nodeAgents,
-                    final RoutingManager routingManager, final LoadManager loadManager) {
-        myNetwork = network;
+    public Emulator(final AgentContainer container,
+                    final NodeAgent[] nodeAgents,
+                    final TrafficManager trafficManager) {
+        myContainer = container;
         myNodeAgents = nodeAgents;
-        myRoutingManager = routingManager;
-        myLoadManager = loadManager;
+        myTrafficManager = trafficManager;
     }
 
-    public void emulate() {
-        for (int i=0;i<100;i++){
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // Ignore
-            }
-            myNodeAgents[0].sendMessage(1, new Message(myNodeAgents.length - 1, "Test message"));
-        }
+    public void emulate() throws StaleProxyException {
+
     }
 }

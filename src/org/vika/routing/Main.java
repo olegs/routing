@@ -1,17 +1,19 @@
 package org.vika.routing;
 
-import jade.core.*;
+import jade.core.Profile;
+import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.util.ExtendedProperties;
 import jade.util.leap.Properties;
-import jade.wrapper.*;
 import jade.wrapper.AgentContainer;
+import jade.wrapper.ControllerException;
 import org.vika.routing.network.Network;
 import org.vika.routing.network.Node;
-import org.vika.routing.network.NodeAgent;
 import org.vika.routing.network.Parser;
+import org.vika.routing.network.jade.NodeAgent;
+import org.vika.routing.network.jade.TrafficAgent;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * @author oleg
@@ -40,8 +42,9 @@ public class Main {
             container.acceptNewAgent("agent" + i, nodeAgent).start();
         }
 
-        final Emulator emulator = new Emulator(network, nodeAgents, routingManager, loadManager);
-        emulator.emulate();
+        // Initiate and start traffic agent
+        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager());
+        container.acceptNewAgent("trafficAgent", trafficAgent).start();
     }
 
 }

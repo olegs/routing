@@ -9,7 +9,6 @@ import java.util.Map;
  * @author oleg
  */
 public class NeuroNetwork extends Network {
-    public Node[] nodes;
     public NeuroNode[] neuroNodes;
 
     public NeuroNetwork(final Node[] nodes) {
@@ -44,7 +43,7 @@ public class NeuroNetwork extends Network {
         // Well, now we have all the minimal path lengths between any pair of nodes if it exists
         final NeuroNode[] neuroNodes = new NeuroNode[nodes.length];
         for (int i = 0; i < nodes.length; i++) {
-            final NeuroNode neuroNode = new NeuroNode();
+            final NeuroNode neuroNode = new NeuroNode(i);
             neuroNodes[i] = neuroNode;
             neuroNode.id = i;
 

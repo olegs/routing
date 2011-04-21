@@ -8,12 +8,11 @@ import java.util.Map;
  * @author oleg
  */
 public class NeuroNode {
-    private static int neuroNodesCount = 0;
     public int id;
     public Map<Pair<Integer,Integer>, Float> wValues;
 
-    public NeuroNode() {
-        id = neuroNodesCount++;
+    public NeuroNode(final int node) {
+        id = node;
     }
 
 }
