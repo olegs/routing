@@ -23,8 +23,9 @@ public class TrafficManager {
             final int randomStart = Math.round((float)Math.random() * nodes);
             final int randomTarget = Math.round((float)Math.random() * nodes);
             final String message = "Message["+ i +"]";
-            final long randomDelay = i == messages - 1 ?
-                    time - timeConsumed : Math.round((float)Math.random() * singeDelayTreshold);
+            final long randomDelay = i == messages - 1
+                    ? time - timeConsumed
+                    : Math.round((float)Math.random() * Math.min(singeDelayTreshold, time - timeConsumed));
             timeConsumed += randomDelay;
             result.add(new TrafficEvent(randomStart, randomDelay, new Message(randomTarget, message)));
         }
