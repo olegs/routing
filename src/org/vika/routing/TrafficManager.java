@@ -24,7 +24,7 @@ public class TrafficManager {
         for (int i = 0; i < messages; i++) {
             final int randomStart = r.nextInt(nodes);
             final int randomTarget = r.nextInt(nodes);
-            final String message = "Message[" + i + "]";
+            final String message = "message" + i;
             final long randomDelay = i == messages - 1
                     ? time - timeConsumed
                     : r.nextInt(Math.min(singeDelayTreshold, time - timeConsumed));

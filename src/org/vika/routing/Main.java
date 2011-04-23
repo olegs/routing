@@ -3,7 +3,10 @@ package org.vika.routing;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
+import jade.tools.sniffer.Agent;
+import jade.tools.sniffer.Sniffer;
 import jade.util.ExtendedProperties;
+import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
 import jade.wrapper.ControllerException;
@@ -21,16 +24,16 @@ import java.util.List;
  */
 public class Main {
 
-    private static final int TIME = 1000000000;
-    private static final int QUANTUM_TIME=500;
+    private static final int TIME = 100;
+    private static final int QUANTUM_TIME=50;
     private static final int NODE_LOAD_RANGE = 10;
     private static final int EDGE_LOAD_RANGE = 10;
-    private static final int MESSAGES = 100;
+    private static final int MESSAGES = 10;
 
-    public static void main(String[] args) throws IOException, ControllerException {
+    public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
         // Create empty profile
         final Properties props = new ExtendedProperties();
-        props.setProperty(Profile.GUI, "true");
+        // props.setProperty(Profile.GUI, "true");
         final Profile p = new ProfileImpl(props);
         // Start a new JADE runtime system
         final AgentContainer container = Runtime.instance().createMainContainer(p);
@@ -57,13 +60,25 @@ public class Main {
 
         // Create JADE backend
         // Register all the agents according to the network
+        final ArrayList nodeAgentsList = new ArrayList(nodeAgents.length);
         for (int i = 0; i < nodes.length; i++) {
             final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
             nodeAgents[i] = nodeAgent;
+            nodeAgentsList.add(new Agent("agent" + i));
             // Register agents
             container.acceptNewAgent("agent" + i, nodeAgent).start();
         }
+
+        // SnifferAgent creating
+        final Sniffer sniffer = new Sniffer();
+        sniffer.sniffMsg(nodeAgentsList, Sniffer.SNIFF_ON);
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
+
+        // Spin lock to kill the runtime on time limit
+        while (timeManager.getTime() < TIME){
+            Thread.sleep(1000);
+        }
+        Runtime.instance().shutDown();
     }
 
 }

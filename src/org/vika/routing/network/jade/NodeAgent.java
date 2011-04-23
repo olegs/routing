@@ -46,9 +46,13 @@ public class NodeAgent extends Agent {
     }
 
     private void messageRecieved(final ACLMessage msg) {
-        System.out.println(" – " + getLocalName()
-                + " received: "
-                + msg.getContent());
+        try {
+            System.out.println(" – " + getLocalName()
+                    + " received: "
+                    + msg.getContentObject());
+        } catch (UnreadableException e) {
+            System.out.println("Couldn't read the message content: " + msg);
+        }
         Message result;
         try {
             result = (Message) msg.getContentObject();

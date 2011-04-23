@@ -13,4 +13,9 @@ public class Message implements Serializable {
         receiver = r;
         message = m;
     }
+
+    @Override
+    public String toString() {
+        return message + "[" + receiver + "]";
+    }
 }
