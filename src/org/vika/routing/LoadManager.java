@@ -2,6 +2,8 @@ package org.vika.routing;
 
 import org.vika.routing.network.jade.NodeAgent;
 
+import java.util.Random;
+
 /**
  * @author oleg
  */
@@ -23,14 +25,15 @@ public class LoadManager {
 
     public static Load generate(final int changes, final int nodes, final int edges,
                                 final int nodeRange, final int edgeRange) {
+        final Random r = new Random();
         final int[][] nodesLoad = new int[nodes][changes];
         final int[][] edgesLoad = new int[edges][changes];
         for (int i=0;i<changes;i++){
             for (int j=0;j<nodes;j++){
-                nodesLoad[j][i] = Math.round((float) Math.random() * nodeRange);
+                nodesLoad[j][i] = r.nextInt(nodeRange);
             }
             for (int j=0;j<edges;j++){
-                edgesLoad[j][i] = Math.round((float) Math.random() * edgeRange);
+                edgesLoad[j][i] = r.nextInt(edgeRange);
             }
         }
         return new Load(changes, nodesLoad, edgesLoad);

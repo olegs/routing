@@ -2,6 +2,7 @@ package org.vika.routing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * @author oleg
@@ -15,17 +16,18 @@ public class TrafficManager {
         myTraffic = traffic;
     }
 
-    public static List<TrafficEvent> generate(final int nodes, final int messages, final long time){
-        final List<TrafficEvent>  result = new ArrayList<TrafficEvent>();
-        long timeConsumed = 0;
-        final long singeDelayTreshold = time / messages * 2;
-        for (int i=0;i<messages;i++) {
-            final int randomStart = Math.round((float)Math.random() * nodes);
-            final int randomTarget = Math.round((float)Math.random() * nodes);
-            final String message = "Message["+ i +"]";
+    public static List<TrafficEvent> generate(final int nodes, final int messages, final int time) {
+        final Random r = new Random();
+        final List<TrafficEvent> result = new ArrayList<TrafficEvent>();
+        int timeConsumed = 0;
+        final int singeDelayTreshold = time / messages * 2;
+        for (int i = 0; i < messages; i++) {
+            final int randomStart = r.nextInt(nodes);
+            final int randomTarget = r.nextInt(nodes);
+            final String message = "Message[" + i + "]";
             final long randomDelay = i == messages - 1
                     ? time - timeConsumed
-                    : Math.round((float)Math.random() * Math.min(singeDelayTreshold, time - timeConsumed));
+                    : r.nextInt(Math.min(singeDelayTreshold, time - timeConsumed));
             timeConsumed += randomDelay;
             result.add(new TrafficEvent(randomStart, randomDelay, new Message(randomTarget, message)));
         }
