@@ -4,11 +4,11 @@ import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.core.Runtime;
 import jade.tools.sniffer.Agent;
-import jade.tools.sniffer.Sniffer;
 import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import org.vika.routing.network.Network;
 import org.vika.routing.network.Node;
@@ -61,17 +61,23 @@ public class Main {
         // Create JADE backend
         // Register all the agents according to the network
         final ArrayList nodeAgentsList = new ArrayList(nodeAgents.length);
+        final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < nodes.length; i++) {
             final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
             nodeAgents[i] = nodeAgent;
-            nodeAgentsList.add(new Agent("agent" + i));
-            container.acceptNewAgent("agent" + i, nodeAgent).start();
+            final String name = "agent" + i;
+            if  (builder.length() > 0){
+                builder.append(";");
+            }
+            builder.append(name);
+            nodeAgentsList.add(new Agent(name));
+            container.acceptNewAgent(name, nodeAgent).start();
         }
 
         // SnifferAgent creating
-        final Sniffer sniffer = new Sniffer();
-        sniffer.sniffMsg(nodeAgentsList, Sniffer.SNIFF_ON);
-        container.acceptNewAgent("sniffer", sniffer).start();
+        final AgentController sniffer =
+                container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+        sniffer.start();
 
         // Start traffic
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
@@ -82,5 +88,4 @@ public class Main {
         }
         Runtime.instance().shutDown();
     }
-
 }
