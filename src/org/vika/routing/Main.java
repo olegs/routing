@@ -25,6 +25,7 @@ public class Main {
     private static final int QUANTUM_TIME=500;
     private static final int NODE_LOAD_RANGE = 10;
     private static final int EDGE_LOAD_RANGE = 10;
+    private static final int MESSAGES = 100;
 
     public static void main(String[] args) throws IOException, ControllerException {
         // Create empty profile
@@ -48,9 +49,11 @@ public class Main {
         // Create routing manager
         final RoutingManager routingManager = new RoutingManager(network, loadManager);
 
+        final TimeManager timeManager = new TimeManager(TIME, QUANTUM_TIME);
         // Initiate traffic agent
-        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, 100, 1000000);
-        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic));
+        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, MESSAGES, TIME);
+        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic), timeManager);
+
 
         // Create JADE backend
         // Register all the agents according to the network
