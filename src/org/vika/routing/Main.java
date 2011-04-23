@@ -65,13 +65,15 @@ public class Main {
             final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
             nodeAgents[i] = nodeAgent;
             nodeAgentsList.add(new Agent("agent" + i));
-            // Register agents
             container.acceptNewAgent("agent" + i, nodeAgent).start();
         }
 
         // SnifferAgent creating
         final Sniffer sniffer = new Sniffer();
         sniffer.sniffMsg(nodeAgentsList, Sniffer.SNIFF_ON);
+        container.acceptNewAgent("sniffer", sniffer).start();
+
+        // Start traffic
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
 
         // Spin lock to kill the runtime on time limit
