@@ -20,6 +20,12 @@ import java.util.List;
  * @author oleg
  */
 public class Main {
+
+    private static final int TIME = 1000000000;
+    private static final int QUANTUM_TIME=500;
+    private static final int NODE_LOAD_RANGE = 10;
+    private static final int EDGE_LOAD_RANGE = 10;
+
     public static void main(String[] args) throws IOException, ControllerException {
         // Create empty profile
         final Properties props = new ExtendedProperties();
@@ -35,9 +41,9 @@ public class Main {
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
 
         // Generate random system load
-        final LoadManager.Load load = LoadManager.generate(1000, nodes.length, network.edges, 10, 10);
+        final LoadManager.Load load =
+                LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_RANGE, EDGE_LOAD_RANGE);
         final LoadManager loadManager = new LoadManager(load);
-
 
         // Create routing manager
         final RoutingManager routingManager = new RoutingManager(network, loadManager);
