@@ -8,7 +8,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
-import org.vika.routing.RoutingManager;
+import org.vika.routing.routing.RoutingManager;
 
 import java.io.IOException;
 

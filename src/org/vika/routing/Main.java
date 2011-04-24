@@ -15,6 +15,8 @@ import org.vika.routing.network.Node;
 import org.vika.routing.network.Parser;
 import org.vika.routing.network.jade.NodeAgent;
 import org.vika.routing.network.jade.TrafficAgent;
+import org.vika.routing.routing.NeuroRoutingManager;
+import org.vika.routing.routing.RoutingManager;
 
 import java.io.IOException;
 import java.util.List;
@@ -50,7 +52,7 @@ public class Main {
         final LoadManager loadManager = new LoadManager(load);
 
         // Create routing manager
-        final RoutingManager routingManager = new RoutingManager(network, loadManager);
+        final RoutingManager routingManager = new NeuroRoutingManager(network, loadManager);
 
         final TimeManager timeManager = new TimeManager(TIME, QUANTUM_TIME);
         // Initiate traffic agent
@@ -59,7 +61,7 @@ public class Main {
 
 
         // Create JADE backend
-        // Register all the agents according to the network
+        // Register all the agents according to the network, and create argument string for the snifferAgent
         final ArrayList nodeAgentsList = new ArrayList(nodeAgents.length);
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < nodes.length; i++) {
