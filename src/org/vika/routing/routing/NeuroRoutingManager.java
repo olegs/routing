@@ -30,19 +30,21 @@ public class NeuroRoutingManager implements RoutingManager {
     }
 
     public void route(final NodeAgent agent, final Message message) {
-        System.out.println("Routing request from agent " + agent.getId() + " message: " + message);
+        myTimeManager.log("Request from " + agent.getId() + " to route " + message);
         final int currentTime = myTimeManager.getCurrentTime();
         final int agentId = agent.getId();
         if (agentId == message.receiver) {
-            message.received(myTimeManager.getCurrentTime());
+            myTimeManager.log("Successfully received message: " + message + " in time " + (myTimeManager.getCurrentTime() - message.time));
             return;
         }
         final Map<Integer, Channel> adjacentNodes = myNetwork.nodes[agentId].adjacentNodes;
         // Send message to the adjacent node it receiver is one of them
         if (adjacentNodes.containsKey(message.receiver)) {
             // We should add non-blocking transmit message with given time
-            final int millis = myTimeManager.getQuantumTime() * adjacentNodes.get(message.receiver).time;
-            sendNonBlockingAfterDelay(agent, message.receiver, message, millis);
+            final int channelTime = adjacentNodes.get(message.receiver).time;
+            final int millis = myTimeManager.getQuantumTime() * channelTime;
+            myTimeManager.log("Sending " +  message + " to " + message.receiver + " channel time " + channelTime);
+            agent.sendMessageAfterDelay(message.receiver, message, millis);
             return;
         }
         final Map<Integer, Float> activationLevels = new HashMap<Integer, Float>();
@@ -72,24 +74,8 @@ public class NeuroRoutingManager implements RoutingManager {
           }
         }
         // Ok we have maximum activation level id, send message there.
-        System.out.println("Neuro send message " +  message + " to " + maxId);
-        final int millis = myTimeManager.getQuantumTime() * adjacentNodes.get(maxId).time;
-        sendNonBlockingAfterDelay(agent, maxId, message, millis);
-    }
-
-    /**
-     * Makes agent asynchronously send message after delay in milliseconds
-     */
-    private void sendNonBlockingAfterDelay(final NodeAgent agent, final int receiver, final Message message, final int millis) {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(millis);
-                } catch (InterruptedException e) {
-                    // Ignore, should never face with
-                }
-                agent.sendMessage(receiver, message);
-            }
-        }).run();
+        final int channelTime = adjacentNodes.get(maxId).time;
+        myTimeManager.log("Sending " +  message + " to " + maxId + " channel time " + channelTime);
+        agent.sendMessageAfterDelay(maxId, message, myTimeManager.getQuantumTime() * channelTime);
     }
 }

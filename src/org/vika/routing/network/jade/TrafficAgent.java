@@ -1,10 +1,15 @@
 package org.vika.routing.network.jade;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
+import jade.domain.FIPAAgentManagement.AMSAgentDescription;
+import jade.lang.acl.ACLMessage;
 import org.vika.routing.Message;
 import org.vika.routing.TimeManager;
 import org.vika.routing.TrafficManager;
+
+import java.io.IOException;
 
 /**
  * @author oleg
@@ -20,6 +25,24 @@ public class TrafficAgent extends Agent {
         myTimeManager = timeManager;
     }
 
+    /**
+     * Send message to the agent with given id
+     */
+    public static void sendMessage(final Agent[] agents, final int receiver, final Message message){
+        final AMSAgentDescription description = new AMSAgentDescription();
+        final AID aid = agents[receiver].getAID();
+        description.setName(aid);
+        final AMSAgentDescription agent = description;
+        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+        msg.addReceiver(agent.getName());
+        try {
+            msg.setContentObject(message);
+        } catch (IOException e) {
+            // Ignore this
+        }
+        agents[receiver].send(msg);
+    }
+
     public void setup() {
         System.out.println("Traffic manager starting traffic.");
         addBehaviour(new OneShotBehaviour() {
@@ -29,8 +52,9 @@ public class TrafficAgent extends Agent {
                     final int initialAgent = myTrafficManager.getInitialAgent();
                     final Message message = myTrafficManager.getMessage();
                     // Setup initial time
+                    myTimeManager.log("Initiated " + message);
                     message.time = myTimeManager.getCurrentTime();
-                    AgentsUtil.sendMessage(myAgents, initialAgent, message);
+                    sendMessage(myAgents, initialAgent, message);
                     // Wait for the delay number of quantum time
                     try {
                         Thread.sleep(delay * myTimeManager.getQuantumTime());

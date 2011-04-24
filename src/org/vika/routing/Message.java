@@ -20,8 +20,4 @@ public class Message implements Serializable {
     public String toString() {
         return message + "@" + time + "[" + receiver + "]";
     }
-
-    public void received(final int currentTime) {
-        System.out.println("Successfully received message: " + this + " in time " + (currentTime - time));
-    }
 }

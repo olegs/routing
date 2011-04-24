@@ -15,10 +15,7 @@ public class TimeManager {
 
     public void start() {
         myStartTime = System.nanoTime();
-    }
-
-    public long getTotalTime() {
-        return myTotalTime;
+        System.out.println("Time manager started with quantum time " + myQuantumTime + "ms and total time " + myTotalTime);
     }
 
     public int getQuantumTime() {
@@ -29,7 +26,10 @@ public class TimeManager {
      * @return returns current time measured by quantum ranges
      */
     public int getCurrentTime() {
-        return Math.round((float)((System.nanoTime() - myStartTime) / ((10e6) * myQuantumTime)));
+        return (int) Math.round(((System.nanoTime() - myStartTime) / (10e6 * myQuantumTime)));
     }
 
+    public void log(final String message) {
+        System.out.println("[" + getCurrentTime() + "]" + message);
+    }
 }

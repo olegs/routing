@@ -66,7 +66,7 @@ public class Main {
         final ArrayList nodeAgentsList = new ArrayList(nodeAgents.length);
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < nodes.length; i++) {
-            final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager);
+            final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager, timeManager);
             nodeAgents[i] = nodeAgent;
             final String name = "agent" + i;
             if  (builder.length() > 0){

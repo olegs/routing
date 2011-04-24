@@ -8,6 +8,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
+import org.vika.routing.TimeManager;
 import org.vika.routing.routing.RoutingManager;
 
 import java.io.IOException;
@@ -19,21 +20,24 @@ import java.io.IOException;
 public class NodeAgent extends Agent {
     public final LoadManager myLoadManager;
     public final RoutingManager myRoutingManager;
+    private final TimeManager myTimeManager;
     private final NodeAgent[] myAgents;
     private final int myId;
 
     public NodeAgent(final int id,
                      final NodeAgent[] agents,
                      final LoadManager loadManager,
-                     final RoutingManager routingManager) {
+                     final RoutingManager routingManager,
+                     final TimeManager timeManager) {
         myLoadManager = loadManager;
         myRoutingManager = routingManager;
+        myTimeManager = timeManager;
         myAgents = agents;
         myId = id;
     }
 
     public void setup() {
-        System.out.println("Agent " + getAID().getName() + " is ready.");
+        myTimeManager.log("Agent " + getAID().getName() + " is ready.");
         addBehaviour(new CyclicBehaviour(this) {
             public void action() {
                 ACLMessage msg = receive();
@@ -47,11 +51,11 @@ public class NodeAgent extends Agent {
 
     private void messageRecieved(final ACLMessage msg) {
         try {
-            System.out.println(" – " + getLocalName()
+            myTimeManager.log(getLocalName()
                     + " received: "
                     + msg.getContentObject());
         } catch (UnreadableException e) {
-            System.out.println("Couldn't read the message content: " + msg);
+            System.err.println("Couldn't read the message content: " + msg);
         }
         Message result;
         try {
@@ -66,16 +70,25 @@ public class NodeAgent extends Agent {
     /**
      * Send message to the agent with given id
      */
-    public void sendMessage(final int receiver, final Message message){
+    public void sendMessageAfterDelay(final int receiver, final Message message, final int millis){
         final AMSAgentDescription agent = findAMSAgentDescription(receiver);
-        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+        final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.addReceiver(agent.getName());
         try {
             msg.setContentObject(message);
         } catch (IOException e) {
             // Ignore this
         }
-        send(msg);
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    Thread.sleep(millis);
+                } catch (InterruptedException e) {
+                    // Ignore, we should never face with
+                }
+                send(msg);
+            }
+        }).run();
     }
 
     private AMSAgentDescription findAMSAgentDescription(final int id) {
