@@ -4,12 +4,12 @@ package org.vika.routing;
  * @author oleg
  */
 public class TimeManager {
-    private final int myDurationTime;
+    private final int myTotalTime;
     private final int myQuantumTime;
     private long myStartTime;
 
     public TimeManager(final int time, final int quantumTime) {
-        myDurationTime = time;
+        myTotalTime = time;
         myQuantumTime = quantumTime;
     }
 
@@ -17,8 +17,8 @@ public class TimeManager {
         myStartTime = System.nanoTime();
     }
 
-    public long getDurationTime() {
-        return myDurationTime;
+    public long getTotalTime() {
+        return myTotalTime;
     }
 
     public int getQuantumTime() {
@@ -28,8 +28,8 @@ public class TimeManager {
     /**
      * @return returns current time measured by quantum ranges
      */
-    public int getTime() {
-        return Math.round((float)((System.nanoTime() - myStartTime) / ((10e3) * myQuantumTime)));
+    public int getCurrentTime() {
+        return Math.round((float)((System.nanoTime() - myStartTime) / ((10e6) * myQuantumTime)));
     }
 
 }

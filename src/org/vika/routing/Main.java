@@ -26,11 +26,11 @@ import java.util.List;
  */
 public class Main {
 
-    private static final int TIME = 10000; // 10 sec
-    private static final int QUANTUM_TIME=500; // 0.5 sec
-    private static final int NODE_LOAD_RANGE = 10;
-    private static final int EDGE_LOAD_RANGE = 10;
-    private static final int MESSAGES = 10;
+    private static final int TIME = 100; // Total number of time quantum
+    private static final int QUANTUM_TIME=100; // (0.1 sec) This is a time quantum used for modelling
+    private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
+    private static final int NODE_LOAD_MAX = 10;
+    private static final int EDGE_LOAD_MAX = 10;
 
     public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
         // Create empty profile
@@ -48,13 +48,14 @@ public class Main {
 
         // Generate random system load
         final LoadManager.Load load =
-                LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_RANGE, EDGE_LOAD_RANGE);
+                LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_MAX, EDGE_LOAD_MAX);
         final LoadManager loadManager = new LoadManager(load);
 
-        // Create routing manager
-        final RoutingManager routingManager = new NeuroRoutingManager(network, loadManager);
-
+        // Time manager
         final TimeManager timeManager = new TimeManager(TIME, QUANTUM_TIME);
+        // Create routing manager
+        final RoutingManager routingManager = new NeuroRoutingManager(network, loadManager, timeManager);
+
         // Initiate traffic agent
         final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, MESSAGES, TIME);
         final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic), timeManager);
@@ -85,7 +86,7 @@ public class Main {
         container.acceptNewAgent("trafficAgent", trafficAgent).start();
 
         // Spin lock to kill the runtime on time limit
-        while (timeManager.getTime() < TIME){
+        while (timeManager.getCurrentTime() < TIME){
             Thread.sleep(1000);
         }
         Runtime.instance().shutDown();

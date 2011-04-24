@@ -14,20 +14,21 @@ public class TrafficManager {
 
     public TrafficManager(final List<TrafficEvent> traffic) {
         myTraffic = traffic;
+        System.out.println("Traffic loaded. Total events: " + traffic.size());
     }
 
-    public static List<TrafficEvent> generate(final int nodes, final int messages, final int time) {
+    public static List<TrafficEvent> generate(final int nodes, final int messages, final int totalTime) {
         final Random r = new Random();
         final List<TrafficEvent> result = new ArrayList<TrafficEvent>();
         int timeConsumed = 0;
-        final int singeDelayTreshold = time / messages * 2;
+        final int singeDelayTreshold = totalTime / messages * 2;
         for (int i = 0; i < messages; i++) {
             final int randomStart = r.nextInt(nodes);
             final int randomTarget = r.nextInt(nodes);
             final String message = "message" + i;
             final long randomDelay = i == messages - 1
-                    ? time - timeConsumed
-                    : r.nextInt(Math.min(singeDelayTreshold, time - timeConsumed));
+                    ? totalTime - timeConsumed
+                    : r.nextInt(Math.min(singeDelayTreshold, totalTime - timeConsumed));
             timeConsumed += randomDelay;
             result.add(new TrafficEvent(randomStart, randomDelay, new Message(randomTarget, message)));
         }
@@ -63,6 +64,11 @@ public class TrafficManager {
             this.initializer = initializer;
             this.delay = delay;
             this.message = message;
+        }
+
+        @Override
+        public String toString() {
+            return message + ":" + delay;
         }
     }
 }

@@ -23,7 +23,7 @@ public class NeuroNetwork extends Network {
         for (int i = 0; i < nodes.length; i++) {
             final Map<Integer, Channel> adjacentNodes = nodes[i].adjacentNodes;
             for (int j = 0; j < nodes.length; j++) {
-                distances[i][j] = adjacentNodes.containsKey(j) ? adjacentNodes.get(j).size : Integer.MAX_VALUE;
+                distances[i][j] = adjacentNodes.containsKey(j) ? adjacentNodes.get(j).time : Integer.MAX_VALUE;
             }
         }
         // n^3 actions
@@ -54,7 +54,7 @@ public class NeuroNetwork extends Network {
                         continue;
                     }
                     final float w = (float)distances[i][j] /
-                            (float)(nodes[i].adjacentNodes.get(number).size + distances[number][j]);
+                            (float)(nodes[i].adjacentNodes.get(number).time + distances[number][j]);
                     neuroNode.wValues.put(new Pair<Integer, Integer>(number, j), w);
                 }
             }

@@ -20,8 +20,8 @@ public class Parser {
             final int number = scanner.nextInt();
             final int edges = scanner.nextInt();
             final HashMap <Pair<Integer, Integer>, Channel> channels = new HashMap<Pair<Integer, Integer>, Channel>();
-            for (int i = 0; i< edges;i++){
-                channels.put(new Pair<Integer, Integer>(scanner.nextInt(), scanner.nextInt()), Channel.parse(scanner));
+            for (int i = 0; i< edges;i++) {
+                channels.put(new Pair<Integer, Integer>(scanner.nextInt(), scanner.nextInt()), Channel.parse(i, scanner));
             }
             final Node[] nodes = new Node[number];
             for (int i = 0; i < number; i++) {

@@ -21,18 +21,22 @@ public class TrafficAgent extends Agent {
     }
 
     public void setup() {
-        System.out.println("Agent " + getAID().getName() + " is ready.");
+        System.out.println("Traffic manager starting traffic.");
         addBehaviour(new CyclicBehaviour(this) {
             public void action() {
                 while (!myTrafficManager.end()){
                     final int delay = (int) myTrafficManager.getDelay();
                     final int initialAgent = myTrafficManager.getInitialAgent();
                     final Message message = myTrafficManager.getMessage();
+                    // Setup initial time
+                    message.time = myTimeManager.getCurrentTime();
                     AgentsUtil.sendMessage(myAgents, initialAgent, message);
                     // Wait for the delay number of quantum time
-                    block(delay * myTimeManager.getQuantumTime());
+                    doWait(delay * myTimeManager.getQuantumTime());
                     myTrafficManager.nextMessage();
                 }
+                System.out.println("Traffic manager is taking down.");
+                takeDown();
             }
         });
         // Start Time manager

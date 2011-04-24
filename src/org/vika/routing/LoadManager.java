@@ -1,7 +1,5 @@
 package org.vika.routing;
 
-import org.vika.routing.network.jade.NodeAgent;
-
 import java.util.Random;
 
 /**
@@ -12,15 +10,7 @@ public class LoadManager {
 
     public LoadManager(final Load load) {
         myLoad = load;
-    }
-
-    public Message messageReceived(final NodeAgent agent, final Message message) {
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            // Ignore
-        }
-        return message;
+        System.out.println("Load loaded. Total changes: " + load.changes);
     }
 
     public static Load generate(final int changes, final int nodes, final int edges,
@@ -37,6 +27,14 @@ public class LoadManager {
             }
         }
         return new Load(changes, nodesLoad, edgesLoad);
+    }
+
+    public int getEdgeLoad(final int id, final int currentTime) {
+        return myLoad.edgesLoad[id][currentTime];
+    }
+
+    public float getNodeLoad(final int id, final int currentTime) {
+        return myLoad.nodesLoad[id][currentTime];
     }
 
     public static class Load {

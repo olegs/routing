@@ -13,6 +13,6 @@ public class TimeManagerTest extends TestCase {
         final TimeManager timeManager = new TimeManager(100, 1000);
         timeManager.start();
         Thread.sleep(2200);
-        assertEquals(220, timeManager.getTime());
+        assertEquals(220, timeManager.getCurrentTime());
     }
 }

@@ -14,6 +14,6 @@ public class ParserTest extends TestCase {
         assertEquals(0, nodes[0].id);
         assertEquals(1, nodes[0].adjacentNodes.size());
         assertEquals(1, nodes[1].adjacentNodes.size());
-        assertEquals(10, nodes[0].adjacentNodes.get(1).size);
+        assertEquals(10, nodes[0].adjacentNodes.get(1).time);
     }
 }

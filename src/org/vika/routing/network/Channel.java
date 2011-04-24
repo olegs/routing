@@ -6,12 +6,16 @@ import java.util.Scanner;
  * @author oleg
  */
 public class Channel {
-    public int size;
+    public final int id;
+    public int time;
 
-    public static Channel parse(final Scanner scanner) {
-        // TODO: implement me later
-        final Channel channel = new Channel();
-        channel.size = scanner.nextInt();
+    public Channel(final int id) {
+        this.id = id;
+    }
+
+    public static Channel parse(final int id, final Scanner scanner) {
+        final Channel channel = new Channel(id);
+        channel.time = scanner.nextInt();
         return channel;
     }
 }
