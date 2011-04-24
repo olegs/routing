@@ -24,7 +24,8 @@ public class TrafficManager {
         final int singeDelayTreshold = totalTime / messages * 2;
         for (int i = 0; i < messages; i++) {
             final int randomStart = r.nextInt(nodes);
-            final int randomTarget = r.nextInt(nodes);
+            int randomTarget;
+            while ((randomTarget = r.nextInt(nodes)) == randomStart);
             final String message = "message" + i;
             final long randomDelay = i == messages - 1
                     ? totalTime - timeConsumed
