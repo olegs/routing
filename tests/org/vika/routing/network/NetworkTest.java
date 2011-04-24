@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class NetworkTest extends TestCase {
     public void testSimple() throws IOException {
-        final Network n = Parser.parse("C:/work/routing/tests/org/vika/routing/network/neuronetwork.txt");
+        final Network n = Parser.parse("C:/work/routing/tests/org/vika/routing/network/network.txt");
         final Node[] nodes = n.nodes;
         final NeuroNetwork network = new NeuroNetwork(n);
         final StringBuilder builder = new StringBuilder();

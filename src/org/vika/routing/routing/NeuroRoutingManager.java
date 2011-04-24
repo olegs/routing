@@ -4,6 +4,7 @@ import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
 import org.vika.routing.network.Channel;
 import org.vika.routing.network.Network;
+import org.vika.routing.network.NeuroNetwork;
 import org.vika.routing.network.jade.NodeAgent;
 
 import java.util.Map;
@@ -14,9 +15,11 @@ import java.util.Map;
 public class NeuroRoutingManager implements RoutingManager {
     private final Network myNetwork;
     private final LoadManager myLoadManager;
+    private final NeuroNetwork myNeuroNetwork;
 
     public NeuroRoutingManager(final Network network, final LoadManager loadManager) {
         myNetwork = network;
+        myNeuroNetwork = new NeuroNetwork(network);
         myLoadManager = loadManager;
     }
 

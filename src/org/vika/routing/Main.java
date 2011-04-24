@@ -26,8 +26,8 @@ import java.util.List;
  */
 public class Main {
 
-    private static final int TIME = 100;
-    private static final int QUANTUM_TIME=50;
+    private static final int TIME = 10000; // 10 sec
+    private static final int QUANTUM_TIME=500; // 0.5 sec
     private static final int NODE_LOAD_RANGE = 10;
     private static final int EDGE_LOAD_RANGE = 10;
     private static final int MESSAGES = 10;
