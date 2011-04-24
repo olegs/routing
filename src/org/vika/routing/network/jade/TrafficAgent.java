@@ -1,7 +1,7 @@
 package org.vika.routing.network.jade;
 
 import jade.core.Agent;
-import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
 import org.vika.routing.Message;
 import org.vika.routing.TimeManager;
 import org.vika.routing.TrafficManager;
@@ -22,7 +22,7 @@ public class TrafficAgent extends Agent {
 
     public void setup() {
         System.out.println("Traffic manager starting traffic.");
-        addBehaviour(new CyclicBehaviour(this) {
+        addBehaviour(new OneShotBehaviour() {
             public void action() {
                 while (!myTrafficManager.end()){
                     final int delay = (int) myTrafficManager.getDelay();
@@ -35,13 +35,11 @@ public class TrafficAgent extends Agent {
                     doWait(delay * myTimeManager.getQuantumTime());
                     myTrafficManager.nextMessage();
                 }
-                System.out.println("Traffic manager is taking down.");
-                takeDown();
+                System.out.println("Traffic manager is done.");
+                doDelete();
             }
         });
         // Start Time manager
         myTimeManager.start();
     }
-
-
 }
