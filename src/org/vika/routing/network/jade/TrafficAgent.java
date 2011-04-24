@@ -32,7 +32,11 @@ public class TrafficAgent extends Agent {
                     message.time = myTimeManager.getCurrentTime();
                     AgentsUtil.sendMessage(myAgents, initialAgent, message);
                     // Wait for the delay number of quantum time
-                    doWait(delay * myTimeManager.getQuantumTime());
+                    try {
+                        Thread.sleep(delay * myTimeManager.getQuantumTime());
+                    } catch (InterruptedException e) {
+                        // Ignore, we should never face with
+                    }
                     myTrafficManager.nextMessage();
                 }
                 System.out.println("Traffic manager is done.");
