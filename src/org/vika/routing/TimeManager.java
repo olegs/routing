@@ -14,22 +14,30 @@ public class TimeManager {
     }
 
     public void start() {
-        myStartTime = System.nanoTime();
+        myStartTime = System.currentTimeMillis();
         System.out.println("Time manager started with quantum time " + myQuantumTime + "ms and total time " + myTotalTime);
-    }
-
-    public int getQuantumTime() {
-        return myQuantumTime;
     }
 
     /**
      * @return returns current time measured by quantum ranges
      */
     public int getCurrentTime() {
-        return (int) Math.round(((System.nanoTime() - myStartTime) / (10e6 * myQuantumTime)));
+        return Math.round(((System.currentTimeMillis() - myStartTime) / myQuantumTime));
     }
 
     public void log(final String message) {
         System.out.println("[" + getCurrentTime() + "]" + message);
+    }
+
+    public void sleep(final int delay) {
+        final int startTime = getCurrentTime();
+        // Wait for the delay number of quantum time
+        try {
+            Thread.sleep(delay * myQuantumTime);
+        } catch (InterruptedException e) {
+            // Ignore, we should never face with
+        }
+        final int realDelay = getCurrentTime() - startTime - delay;
+        assert -1 <= realDelay&& realDelay <= 1 : "Failed to wait for " + delay + " difference: " + realDelay;
     }
 }

@@ -42,9 +42,8 @@ public class NeuroRoutingManager implements RoutingManager {
         if (adjacentNodes.containsKey(message.receiver)) {
             // We should add non-blocking transmit message with given time
             final int channelTime = adjacentNodes.get(message.receiver).time;
-            final int millis = myTimeManager.getQuantumTime() * channelTime;
             myTimeManager.log("Sending " +  message + " to " + message.receiver + " channel time " + channelTime);
-            agent.sendMessageAfterDelay(message.receiver, message, millis);
+            agent.sendMessageAfterDelay(message.receiver, message, channelTime);
             return;
         }
         final Map<Integer, Float> activationLevels = new HashMap<Integer, Float>();
@@ -76,6 +75,6 @@ public class NeuroRoutingManager implements RoutingManager {
         // Ok we have maximum activation level id, send message there.
         final int channelTime = adjacentNodes.get(maxId).time;
         myTimeManager.log("Sending " +  message + " to " + maxId + " channel time " + channelTime);
-        agent.sendMessageAfterDelay(maxId, message, myTimeManager.getQuantumTime() * channelTime);
+        agent.sendMessageAfterDelay(maxId, message, channelTime);
     }
 }

@@ -55,12 +55,7 @@ public class TrafficAgent extends Agent {
                     myTimeManager.log("Initiated " + message);
                     message.time = myTimeManager.getCurrentTime();
                     sendMessage(myAgents, initialAgent, message);
-                    // Wait for the delay number of quantum time
-                    try {
-                        Thread.sleep(delay * myTimeManager.getQuantumTime());
-                    } catch (InterruptedException e) {
-                        // Ignore, we should never face with
-                    }
+                    myTimeManager.sleep(delay);
                     myTrafficManager.nextMessage();
                 }
                 System.out.println("Traffic manager is done.");

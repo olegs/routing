@@ -70,7 +70,7 @@ public class NodeAgent extends Agent {
     /**
      * Send message to the agent with given id
      */
-    public void sendMessageAfterDelay(final int receiver, final Message message, final int millis){
+    public void sendMessageAfterDelay(final int receiver, final Message message, final int delay){
         final AMSAgentDescription agent = findAMSAgentDescription(receiver);
         final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.addReceiver(agent.getName());
@@ -81,11 +81,7 @@ public class NodeAgent extends Agent {
         }
         new Thread(new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(millis);
-                } catch (InterruptedException e) {
-                    // Ignore, we should never face with
-                }
+                myTimeManager.sleep(delay);
                 send(msg);
             }
         }).run();
