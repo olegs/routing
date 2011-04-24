@@ -21,7 +21,7 @@ public class NeuroRoutingManager implements RoutingManager {
     }
 
     public void route(final NodeAgent agent, final Message message) {
-        System.out.println("Routing request: ");
+        System.out.println("Routing request from agent " + agent.getId() + " message: " + message);
         // Ask load manager to process message received,
         // loadManager can call block agent before responding
         myLoadManager.messageReceived(agent, message);
