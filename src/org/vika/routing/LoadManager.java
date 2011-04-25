@@ -30,11 +30,11 @@ public class LoadManager {
     }
 
     public int getEdgeLoad(final int id, final int currentTime) {
-        return myLoad.edgesLoad[id][currentTime];
+        return myLoad.edgesLoad[id][currentTime % myLoad.changes];
     }
 
     public float getNodeLoad(final int id, final int currentTime) {
-        return myLoad.nodesLoad[id][currentTime];
+        return myLoad.nodesLoad[id][currentTime % myLoad.changes];
     }
 
     public static class Load {
