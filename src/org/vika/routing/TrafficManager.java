@@ -9,11 +9,12 @@ import java.util.Random;
  * @date 21.04.11
  */
 public class TrafficManager {
-    private final List<TrafficEvent> myTraffic;
+    private List<TrafficEvent> myTraffic;
     private int myIndex = 0;
 
-    public TrafficManager(final List<TrafficEvent> traffic) {
+    public void setTraffic(final List<TrafficEvent> traffic){
         myTraffic = traffic;
+        myIndex = 0;
         System.out.println("Traffic loaded. Total events: " + traffic.size());
     }
 

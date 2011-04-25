@@ -6,11 +6,11 @@ import java.util.Random;
  * @author oleg
  */
 public class LoadManager {
-    private final Load myLoad;
+    private Load myLoad;
 
-    public LoadManager(final Load load) {
-        myLoad = load;
+    public void setLoad(final Load load) {
         System.out.println("Load loaded. Total changes: " + load.changes);
+        myLoad = load;
     }
 
     public static Load generate(final int changes, final int nodes, final int edges,

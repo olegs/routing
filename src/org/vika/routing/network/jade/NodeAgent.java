@@ -18,8 +18,8 @@ import java.io.IOException;
  * Agent used in network, which can be used in JADE system
  */
 public class NodeAgent extends Agent {
+    public static RoutingManager routingManager;
     public final LoadManager myLoadManager;
-    public final RoutingManager myRoutingManager;
     private final TimeManager myTimeManager;
     private final NodeAgent[] myAgents;
     private final int myId;
@@ -27,11 +27,9 @@ public class NodeAgent extends Agent {
     public NodeAgent(final int id,
                      final NodeAgent[] agents,
                      final LoadManager loadManager,
-                     final RoutingManager routingManager,
                      final TimeManager timeManager) {
-        myLoadManager = loadManager;
-        myRoutingManager = routingManager;
         myTimeManager = timeManager;
+        myLoadManager = loadManager;
         myAgents = agents;
         myId = id;
     }
@@ -64,7 +62,7 @@ public class NodeAgent extends Agent {
             result = null;
         }
         final Message message = result;
-        myRoutingManager.route(this, message);
+        routingManager.route(this, message);
     }
 
     /**

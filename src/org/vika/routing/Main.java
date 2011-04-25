@@ -8,8 +8,8 @@ import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
+import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
 import org.vika.routing.network.Node;
 import org.vika.routing.network.Parser;
@@ -46,27 +46,20 @@ public class Main {
         final Node[] nodes = network.nodes;
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
 
-        // Generate random system load
-        final LoadManager.Load load =
-                LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_MAX, EDGE_LOAD_MAX);
-        final LoadManager loadManager = new LoadManager(load);
+        final LoadManager loadManager = new LoadManager();
 
         // Time manager
         final TimeManager timeManager = new TimeManager(TIME, QUANTUM_TIME);
-        // Create routing manager
-        final RoutingManager routingManager = new NeuroRoutingManager(network, loadManager, timeManager);
 
         // Initiate traffic agent
-        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, MESSAGES, TIME);
-        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, new TrafficManager(traffic), timeManager);
-
+        final TrafficManager trafficManager = new TrafficManager();
 
         // Create JADE backend
         // Register all the agents according to the network, and create argument string for the snifferAgent
         final ArrayList nodeAgentsList = new ArrayList(nodeAgents.length);
         final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < nodes.length; i++) {
-            final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, routingManager, timeManager);
+            final NodeAgent nodeAgent = new NodeAgent(i, nodeAgents, loadManager, timeManager);
             nodeAgents[i] = nodeAgent;
             final String name = "agent" + i;
             if  (builder.length() > 0){
@@ -78,17 +71,38 @@ public class Main {
         }
 
         // SnifferAgent creating
-        final AgentController sniffer =
-                container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
-        sniffer.start();
-
-        // Start traffic
-        container.acceptNewAgent("trafficAgent", trafficAgent).start();
+//        final AgentController sniffer =
+//                container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+//        sniffer.start();
+        emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
 
         // Spin lock to kill the runtime on time limit
         while (timeManager.getCurrentTime() < TIME){
             Thread.sleep(1000);
         }
         Runtime.instance().shutDown();
+    }
+
+    private static void emulate(final AgentContainer container,
+                                final Network network,
+                                final Node[] nodes,
+                                final NodeAgent[] nodeAgents,
+                                final LoadManager loadManager,
+                                final TimeManager timeManager,
+                                final TrafficManager trafficManager) throws StaleProxyException {
+        // Start traffic agent
+        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, trafficManager, timeManager);
+
+        // Create routing manager
+        final RoutingManager routingManager = new NeuroRoutingManager(network, loadManager, timeManager);
+        NodeAgent.routingManager = routingManager;
+        // Generate random system load and traffic
+        final LoadManager.Load load =
+                LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_MAX, EDGE_LOAD_MAX);
+        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, MESSAGES, TIME);
+        trafficManager.setTraffic(traffic);
+        loadManager.setLoad(load);
+
+        container.acceptNewAgent("trafficAgent", trafficAgent).start();
     }
 }
