@@ -52,8 +52,8 @@ public class TrafficAgent extends Agent {
                     final int initialAgent = myTrafficManager.getInitialAgent();
                     final Message message = myTrafficManager.getMessage();
                     // Setup initial time
-                    myTimeManager.log("Initiated " + message);
                     message.time = myTimeManager.getCurrentTime();
+                    myTimeManager.log("Initiated " + message);
                     sendMessage(myAgents, initialAgent, message);
                     myTimeManager.sleep(delay);
                     myTrafficManager.nextMessage();
