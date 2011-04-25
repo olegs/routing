@@ -15,6 +15,7 @@ import org.vika.routing.network.Node;
 import org.vika.routing.network.Parser;
 import org.vika.routing.network.jade.NodeAgent;
 import org.vika.routing.network.jade.TrafficAgent;
+import org.vika.routing.routing.DeikstraRoutingManager;
 import org.vika.routing.routing.NeuroRoutingManager;
 import org.vika.routing.routing.RoutingManager;
 
@@ -75,12 +76,6 @@ public class Main {
 //                container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
 //        sniffer.start();
         emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
-
-        // Spin lock to kill the runtime on time limit
-        while (timeManager.getCurrentTime() < TIME){
-            Thread.sleep(1000);
-        }
-        Runtime.instance().shutDown();
     }
 
     private static void emulate(final AgentContainer container,
@@ -89,13 +84,7 @@ public class Main {
                                 final NodeAgent[] nodeAgents,
                                 final LoadManager loadManager,
                                 final TimeManager timeManager,
-                                final TrafficManager trafficManager) throws StaleProxyException {
-        // Start traffic agent
-        final TrafficAgent trafficAgent = new TrafficAgent(nodeAgents, trafficManager, timeManager);
-
-        // Create routing manager
-        final RoutingManager routingManager = new NeuroRoutingManager(network, loadManager, timeManager);
-        NodeAgent.routingManager = routingManager;
+                                final TrafficManager trafficManager) throws StaleProxyException, InterruptedException {
         // Generate random system load and traffic
         final LoadManager.Load load =
                 LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_MAX, EDGE_LOAD_MAX);
@@ -103,6 +92,25 @@ public class Main {
         trafficManager.setTraffic(traffic);
         loadManager.setLoad(load);
 
-        container.acceptNewAgent("trafficAgent", trafficAgent).start();
+        // Create neuro routing manager
+        final RoutingManager neuroRoutingManager = new NeuroRoutingManager(network, loadManager, timeManager, MESSAGES);
+        NodeAgent.routingManager = neuroRoutingManager;
+        // Start traffic agent
+        container.acceptNewAgent("NeuroTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
+
+        // Spin lock while all the messages are not processed
+        while (!neuroRoutingManager.areAllMessagesReceived()){
+            Thread.sleep(1000);
+        }
+        System.out.println("Routing successfully finished");
+
+        // Create neuro routing manager
+        final RoutingManager deikstraRoutingManager =
+                new DeikstraRoutingManager(network, loadManager, timeManager, MESSAGES);
+        NodeAgent.routingManager = deikstraRoutingManager;
+        // Start traffic agent
+        trafficManager.reset();
+        container.acceptNewAgent("DeikstraTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
+
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 /**
  * @author oleg
  */
-public class NeuroRoutingManager implements RoutingManager {
+public class DeikstraRoutingManager implements RoutingManager {
     private static final float DEFAULT_NODE_ACTIVATION = 0.9f;
     private final Network myNetwork;
     private final LoadManager myLoadManager;
@@ -24,11 +24,11 @@ public class NeuroRoutingManager implements RoutingManager {
     private final int myRoutingEvents;
     private int myReceivedMessages;
 
-    public NeuroRoutingManager(final Network network, final LoadManager loadManager,
+    public DeikstraRoutingManager(final Network network, final LoadManager loadManager,
                                final TimeManager timeManager, final int routingEvents) {
         myRoutingEvents = routingEvents;
         myReceivedMessages = 0;
-        System.out.println("Neuro network based routing manager is used!");
+        System.out.println("Deikstra network based routing manager is used!");
         myNetwork = network;
         myNeuroNetwork = new NeuroNetwork(network);
         myLoadManager = loadManager;
@@ -89,3 +89,4 @@ public class NeuroRoutingManager implements RoutingManager {
         return myReceivedMessages == myRoutingEvents;
     }
 }
+

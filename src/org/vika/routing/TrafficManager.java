@@ -10,12 +10,16 @@ import java.util.Random;
  */
 public class TrafficManager {
     private List<TrafficEvent> myTraffic;
-    private int myIndex = 0;
+    private int myIndex;
 
     public void setTraffic(final List<TrafficEvent> traffic){
         myTraffic = traffic;
-        myIndex = 0;
         System.out.println("Traffic loaded. Total events: " + traffic.size());
+        reset();
+    }
+
+    public void reset(){
+        myIndex = 0;
     }
 
     public static List<TrafficEvent> generate(final int nodes, final int messages, final int totalTime) {

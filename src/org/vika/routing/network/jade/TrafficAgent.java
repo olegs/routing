@@ -55,8 +55,10 @@ public class TrafficAgent extends Agent {
                     message.time = myTimeManager.getCurrentTime();
                     myTimeManager.log("Initiated " + message + " to agent " + initialAgent);
                     sendMessage(myAgents, initialAgent, message);
-                    myTimeManager.sleep(delay);
                     myTrafficManager.nextMessage();
+                    if (!myTrafficManager.end()){
+                        myTimeManager.sleep(delay);
+                    }
                 }
                 System.out.println("Traffic manager is done.");
                 doDelete();
