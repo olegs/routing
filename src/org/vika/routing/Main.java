@@ -8,7 +8,6 @@ import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
@@ -28,9 +27,9 @@ import java.util.List;
  */
 public class Main {
 
-    private static final int TIME = 200; // Total number of time quantum
-    private static final int QUANTUM_TIME=50; // (0.01 sec) This is a time quantum used for modelling
-    private static final int MESSAGES = 50; // How many messages will generated in traffic and spread during TIME
+    private static final int TIME = 100; // Total number of time quantum
+    private static final int QUANTUM_TIME=100; // (0.01 sec) This is a time quantum used for modelling
+    private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
     private static final int NODE_LOAD_MAX = 10;
     private static final int EDGE_LOAD_MAX = 10;
 
@@ -73,9 +72,9 @@ public class Main {
         }
 
         // SnifferAgent creating
-        final AgentController sniffer =
-               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
-        sniffer.start();
+//        final AgentController sniffer =
+//               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+//        sniffer.start();
         emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
         // Nasty hack to shut down
         System.exit(0);
