@@ -40,7 +40,8 @@ public class NeuroRoutingManager implements RoutingManager {
         final int currentTime = myTimeManager.getCurrentTime();
         final int agentId = agent.getId();
         if (agentId == message.receiver) {
-            myTimeManager.log("Successfully received message: " + message + " in time " + (myTimeManager.getCurrentTime() - message.time));
+
+            myTimeManager.messageReceived(message);
             myReceivedMessages++;
             return;
         }

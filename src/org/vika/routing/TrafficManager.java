@@ -31,12 +31,11 @@ public class TrafficManager {
             final int randomStart = r.nextInt(nodes);
             int randomTarget;
             while ((randomTarget = r.nextInt(nodes)) == randomStart);
-            final String message = "message" + i;
             final long randomDelay = i == messages - 1
                     ? totalTime - timeConsumed
                     : r.nextInt(Math.min(singeDelayTreshold, totalTime - timeConsumed));
             timeConsumed += randomDelay;
-            result.add(new TrafficEvent(randomStart, randomDelay, new Message(randomTarget, message)));
+            result.add(new TrafficEvent(randomStart, randomDelay, new Message(i, randomTarget)));
         }
         return result;
     }

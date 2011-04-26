@@ -61,8 +61,7 @@ public class NodeAgent extends Agent {
         } catch (UnreadableException e) {
             result = null;
         }
-        final Message message = result;
-        routingManager.route(this, message);
+        routingManager.route(this, result);
     }
 
     /**

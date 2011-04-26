@@ -7,6 +7,7 @@ public class TimeManager {
     private final int myTotalTime;
     private final int myQuantumTime;
     private long myStartTime;
+    public int[] deliveryTimes;
 
     public TimeManager(final int time, final int quantumTime) {
         myTotalTime = time;
@@ -38,6 +39,16 @@ public class TimeManager {
             // Ignore, we should never face with
         }
         final int realDelay = getCurrentTime() - startTime - delay;
-        assert -1 <= realDelay&& realDelay <= 1 : "Failed to wait for " + delay + " difference: " + realDelay;
+        assert -2 <= realDelay&& realDelay <= 2 : "Failed to wait for " + delay + " with difference: " + realDelay;
+    }
+
+    public void resetStatistics(final int messages){
+        deliveryTimes = new int[messages];
+    }
+
+    public void messageReceived(final Message message) {
+        final int deliveryTime = getCurrentTime() - message.time;
+        log("Successfully received message: " + message + " in time " + deliveryTime);
+        deliveryTimes[message.id] = deliveryTime;
     }
 }

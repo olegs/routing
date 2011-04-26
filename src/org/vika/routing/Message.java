@@ -6,18 +6,17 @@ import java.io.Serializable;
  * @author oleg
  */
 public class Message implements Serializable {
-    public final String message;
+    public int id;
     public final int receiver;
     public int time = -1;
 
-    public Message(final int r, final String m) {
+    public Message(final int i, final int r) {
+        id = i;
         receiver = r;
-        message = m;
     }
-
 
     @Override
     public String toString() {
-        return message + "@" + time + "[" + receiver + "]";
+        return "message" + id + "@" + time + "[" + receiver + "]";
     }
 }

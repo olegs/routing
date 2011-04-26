@@ -27,9 +27,9 @@ import java.util.List;
  */
 public class Main {
 
-    private static final int TIME = 100; // Total number of time quantum
-    private static final int QUANTUM_TIME=100; // (0.1 sec) This is a time quantum used for modelling
-    private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
+    private static final int TIME = 200; // Total number of time quantum
+    private static final int QUANTUM_TIME=50; // (0.01 sec) This is a time quantum used for modelling
+    private static final int MESSAGES = 50; // How many messages will generated in traffic and spread during TIME
     private static final int NODE_LOAD_MAX = 10;
     private static final int EDGE_LOAD_MAX = 10;
 
@@ -76,6 +76,8 @@ public class Main {
 //                container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
 //        sniffer.start();
         emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+        // Nasty hack to shut down
+        System.exit(0);
     }
 
     private static void emulate(final AgentContainer container,
@@ -95,22 +97,42 @@ public class Main {
         // Create neuro routing manager
         final RoutingManager neuroRoutingManager = new NeuroRoutingManager(network, loadManager, timeManager, MESSAGES);
         NodeAgent.routingManager = neuroRoutingManager;
+        timeManager.resetStatistics(MESSAGES);
         // Start traffic agent
         container.acceptNewAgent("NeuroTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
 
         // Spin lock while all the messages are not processed
         while (!neuroRoutingManager.areAllMessagesReceived()){
+            System.out.println("Waiting for neuro routing finished");
             Thread.sleep(1000);
         }
         System.out.println("Routing successfully finished");
+        printStatistics(timeManager);
 
         // Create neuro routing manager
         final RoutingManager deikstraRoutingManager =
                 new DeikstraRoutingManager(network, loadManager, timeManager, MESSAGES);
         NodeAgent.routingManager = deikstraRoutingManager;
+        timeManager.resetStatistics(MESSAGES);
         // Start traffic agent
         trafficManager.reset();
         container.acceptNewAgent("DeikstraTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
+        // Spin lock while all the messages are not processed
+        while (!deikstraRoutingManager.areAllMessagesReceived()){
+            System.out.println("Wait for deikstra routing finished");
+            Thread.sleep(1000);
+        }
+        System.out.println("Routing successfully finished");
+        printStatistics(timeManager);
+        // Nasty hack to shut down
+        System.exit(0);
+    }
 
+    private static void printStatistics(final TimeManager timeManager) {
+        final StringBuilder builder = new StringBuilder("Deliver statistics:");
+        for (int time : timeManager.deliveryTimes) {
+            builder.append(" " + time);
+        }
+        System.err.println(builder.toString());
     }
 }
