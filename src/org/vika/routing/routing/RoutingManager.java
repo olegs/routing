@@ -9,5 +9,6 @@ import org.vika.routing.network.jade.NodeAgent;
  */
 public interface RoutingManager {
     public void route(final NodeAgent agent, final Message message);
+    public int receivedMessages();
     public boolean areAllMessagesReceived();
 }

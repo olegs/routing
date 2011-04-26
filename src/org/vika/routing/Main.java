@@ -8,6 +8,7 @@ import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
@@ -72,9 +73,9 @@ public class Main {
         }
 
         // SnifferAgent creating
-//        final AgentController sniffer =
-//                container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
-//        sniffer.start();
+        final AgentController sniffer =
+               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+        sniffer.start();
         emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
         // Nasty hack to shut down
         System.exit(0);
@@ -103,7 +104,7 @@ public class Main {
 
         // Spin lock while all the messages are not processed
         while (!neuroRoutingManager.areAllMessagesReceived()){
-            System.out.println("Waiting for neuro routing finished");
+            System.out.println("Waiting for neuro routing finished. Messages left: " + (MESSAGES - neuroRoutingManager.receivedMessages()));
             Thread.sleep(1000);
         }
         System.out.println("Routing successfully finished");
@@ -119,7 +120,7 @@ public class Main {
         container.acceptNewAgent("DeikstraTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
         // Spin lock while all the messages are not processed
         while (!deikstraRoutingManager.areAllMessagesReceived()){
-            System.out.println("Wait for deikstra routing finished");
+            System.out.println("Wait for deikstra routing finished. Messages left: " + (MESSAGES - deikstraRoutingManager.receivedMessages()));
             Thread.sleep(1000);
         }
         System.out.println("Routing successfully finished");

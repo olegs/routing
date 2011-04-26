@@ -85,6 +85,10 @@ public class DeikstraRoutingManager implements RoutingManager {
         agent.sendMessageAfterDelay(maxId, message, channelTime);
     }
 
+    public int receivedMessages() {
+       return myReceivedMessages;
+    }
+
     public boolean areAllMessagesReceived() {
         return myReceivedMessages == myRoutingEvents;
     }
