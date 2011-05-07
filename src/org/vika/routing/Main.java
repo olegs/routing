@@ -32,6 +32,7 @@ public class Main {
     private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
     private static final int NODE_LOAD_MAX = 10;
     private static final int EDGE_LOAD_MAX = 10;
+    private static final int EXPERIMENT_COUNT = 5;
 
     public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
         // Create empty profile
@@ -75,7 +76,9 @@ public class Main {
 //        final AgentController sniffer =
 //               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
 //        sniffer.start();
-        emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+        for (int i=0;i< EXPERIMENT_COUNT;i++){
+            emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+        }
         // Nasty hack to shut down
         System.exit(0);
     }
@@ -124,8 +127,6 @@ public class Main {
         }
         System.out.println("Routing successfully finished");
         printStatistics(timeManager);
-        // Nasty hack to shut down
-        System.exit(0);
     }
 
     private static void printStatistics(final TimeManager timeManager) {
