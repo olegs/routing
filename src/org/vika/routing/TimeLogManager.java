@@ -32,7 +32,6 @@ public class TimeLogManager {
 
     public void log(final String message) {
         final String output = "[" + getCurrentTime() + "]" + message;
-        System.out.println();
         try {
             myLogWriter.write(output + "\n");
         } catch (IOException e) {
