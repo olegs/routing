@@ -82,8 +82,10 @@ public class Main {
 //        sniffer.start();
         try {
             for (int i=0;i< EXPERIMENT_COUNT;i++){
+                timeManager.printToWriter("Starting experiment #" + i);
                 emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
             }
+            timeManager.printAllStatistics();
 
         } finally {
             writer.close();
@@ -120,6 +122,7 @@ public class Main {
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();
+        timeManager.saveNeuroStatistics();
 
         // Create neuro routing manager
         final RoutingManager deikstraRoutingManager =
@@ -136,5 +139,6 @@ public class Main {
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();
+        timeManager.saveDeikstraStatistics();
     }
 }

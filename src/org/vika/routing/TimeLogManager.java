@@ -2,6 +2,7 @@ package org.vika.routing;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * @author oleg
@@ -12,6 +13,8 @@ public class TimeLogManager {
     private final int myQuantumTime;
     private long myStartTime;
     public int[] deliveryTimes;
+    private final ArrayList<int[]> neuroStatistics = new ArrayList<int[]>();
+    private final ArrayList<int[]> deikstraStatistics = new ArrayList<int[]>();
 
     public TimeLogManager(final BufferedWriter logWriter, final int time, final int quantumTime) {
         myLogWriter = logWriter;
@@ -32,8 +35,11 @@ public class TimeLogManager {
     }
 
     public void log(final String message) {
-        final String output = "[" + getCurrentTime() + "]" + message;
-        System.out.println(output);
+        printToWriter("[" + getCurrentTime() + "]" + message);
+    }
+
+    public void printToWriter(final String output) {
+        System.out.print(output);
         try {
             myLogWriter.write(output + "\n");
         } catch (IOException e) {
@@ -64,10 +70,33 @@ public class TimeLogManager {
     }
 
     public void printStatistics() {
+        printStatistics(deliveryTimes);
+    }
+
+    private void printStatistics(final int [] deliveryTimes) {
         final StringBuilder builder = new StringBuilder("Deliver statistics:");
         for (int time : deliveryTimes) {
             builder.append(" " + time);
         }
-        log(builder.toString());
+        printToWriter(builder.toString());
+    }
+
+    public void saveNeuroStatistics() {
+        neuroStatistics.add(deliveryTimes);
+    }
+
+    public void saveDeikstraStatistics() {
+        deikstraStatistics.add(deliveryTimes);
+    }
+
+    public void printAllStatistics() {
+        printToWriter("Neuro routing delivery times");
+        for (int[] ints : neuroStatistics) {
+           printStatistics(ints);
+        }
+        printToWriter("Deikstra routing delivery times");
+        for (int[] ints : deikstraStatistics) {
+           printStatistics(ints);
+        }
     }
 }
