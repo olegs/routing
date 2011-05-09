@@ -3,7 +3,7 @@ package org.vika.routing.routing;
 import com.sun.tools.javac.util.Pair;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
-import org.vika.routing.TimeManager;
+import org.vika.routing.TimeLogManager;
 import org.vika.routing.network.Channel;
 import org.vika.routing.network.Network;
 import org.vika.routing.network.NeuroNetwork;
@@ -20,12 +20,12 @@ public class DeikstraRoutingManager implements RoutingManager {
     private final Network myNetwork;
     private final LoadManager myLoadManager;
     private final NeuroNetwork myNeuroNetwork;
-    private final TimeManager myTimeManager;
+    private final TimeLogManager myTimeManager;
     private final int myRoutingEvents;
     private int myReceivedMessages;
 
     public DeikstraRoutingManager(final Network network, final LoadManager loadManager,
-                               final TimeManager timeManager, final int routingEvents) {
+                               final TimeLogManager timeManager, final int routingEvents) {
         myRoutingEvents = routingEvents;
         myReceivedMessages = 0;
         System.out.println("Deikstra network based routing manager is used!");

@@ -6,7 +6,7 @@ import jade.core.behaviours.OneShotBehaviour;
 import jade.domain.FIPAAgentManagement.AMSAgentDescription;
 import jade.lang.acl.ACLMessage;
 import org.vika.routing.Message;
-import org.vika.routing.TimeManager;
+import org.vika.routing.TimeLogManager;
 import org.vika.routing.TrafficManager;
 
 import java.io.IOException;
@@ -17,9 +17,9 @@ import java.io.IOException;
 public class TrafficAgent extends Agent {
     private final NodeAgent[] myAgents;
     private TrafficManager myTrafficManager;
-    private final TimeManager myTimeManager;
+    private final TimeLogManager myTimeManager;
 
-    public TrafficAgent(final NodeAgent[] agents, final TrafficManager trafficManager, final TimeManager timeManager) {
+    public TrafficAgent(final NodeAgent[] agents, final TrafficManager trafficManager, final TimeLogManager timeManager) {
         myAgents = agents;
         myTrafficManager = trafficManager;
         myTimeManager = timeManager;

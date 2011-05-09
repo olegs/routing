@@ -1,15 +1,19 @@
 package org.vika.routing;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+
 /**
  * @author oleg
  */
-public class TimeManager {
+public class TimeLogManager {
     private final int myTotalTime;
     private final int myQuantumTime;
     private long myStartTime;
     public int[] deliveryTimes;
+    private BufferedWriter myLogWriter;
 
-    public TimeManager(final int time, final int quantumTime) {
+    public TimeLogManager(final int time, final int quantumTime) {
         myTotalTime = time;
         myQuantumTime = quantumTime;
     }
@@ -27,7 +31,13 @@ public class TimeManager {
     }
 
     public void log(final String message) {
-        System.out.println("[" + getCurrentTime() + "]" + message);
+        final String output = "[" + getCurrentTime() + "]" + message;
+        System.out.println();
+        try {
+            myLogWriter.write(output + "\n");
+        } catch (IOException e) {
+            System.err.println("Failed to write to log file");
+        }
     }
 
     public void sleep(final int delay) {
@@ -50,5 +60,17 @@ public class TimeManager {
         final int deliveryTime = getCurrentTime() - message.time;
         log("Successfully received message: " + message + " in time " + deliveryTime);
         deliveryTimes[message.id] = deliveryTime;
+    }
+
+   public void setMyLogWriter(final BufferedWriter logWriter) {
+        myLogWriter = logWriter;
+    }
+
+    public void printStatistics() {
+        final StringBuilder builder = new StringBuilder("Deliver statistics:");
+        for (int time : deliveryTimes) {
+            builder.append(" " + time);
+        }
+        log(builder.toString());
     }
 }

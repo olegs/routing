@@ -19,6 +19,8 @@ import org.vika.routing.routing.DeikstraRoutingManager;
 import org.vika.routing.routing.NeuroRoutingManager;
 import org.vika.routing.routing.RoutingManager;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
@@ -51,7 +53,7 @@ public class Main {
         final LoadManager loadManager = new LoadManager();
 
         // Time manager
-        final TimeManager timeManager = new TimeManager(TIME, QUANTUM_TIME);
+        final TimeLogManager timeManager = new TimeLogManager(TIME, QUANTUM_TIME);
 
         // Initiate traffic agent
         final TrafficManager trafficManager = new TrafficManager();
@@ -76,8 +78,16 @@ public class Main {
 //        final AgentController sniffer =
 //               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
 //        sniffer.start();
-        for (int i=0;i< EXPERIMENT_COUNT;i++){
-            emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+        final String outputFileName = "C:/work/routing/tests/org/vika/routing/network/result.txt";
+        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+        timeManager.setMyLogWriter(writer);
+        try {
+            for (int i=0;i< EXPERIMENT_COUNT;i++){
+                emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+            }
+
+        } finally {
+            writer.close();
         }
         // Nasty hack to shut down
         System.exit(0);
@@ -88,7 +98,7 @@ public class Main {
                                 final Node[] nodes,
                                 final NodeAgent[] nodeAgents,
                                 final LoadManager loadManager,
-                                final TimeManager timeManager,
+                                final TimeLogManager timeManager,
                                 final TrafficManager trafficManager) throws StaleProxyException, InterruptedException {
         // Generate random system load and traffic
         final LoadManager.Load load =
@@ -109,8 +119,8 @@ public class Main {
             System.out.println("Waiting for neuro routing finished. Messages left: " + (MESSAGES - neuroRoutingManager.receivedMessages()));
             Thread.sleep(1000);
         }
-        System.out.println("Routing successfully finished");
-        printStatistics(timeManager);
+        timeManager.log("Routing successfully finished");
+        timeManager.printStatistics();
 
         // Create neuro routing manager
         final RoutingManager deikstraRoutingManager =
@@ -125,15 +135,7 @@ public class Main {
             System.out.println("Wait for deikstra routing finished. Messages left: " + (MESSAGES - deikstraRoutingManager.receivedMessages()));
             Thread.sleep(1000);
         }
-        System.out.println("Routing successfully finished");
-        printStatistics(timeManager);
-    }
-
-    private static void printStatistics(final TimeManager timeManager) {
-        final StringBuilder builder = new StringBuilder("Deliver statistics:");
-        for (int time : timeManager.deliveryTimes) {
-            builder.append(" " + time);
-        }
-        System.err.println(builder.toString());
+        timeManager.log("Routing successfully finished");
+        timeManager.printStatistics();
     }
 }

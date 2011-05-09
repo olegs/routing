@@ -1,7 +1,7 @@
 package org.vika.routing.network;
 
 import junit.framework.TestCase;
-import org.vika.routing.TimeManager;
+import org.vika.routing.TimeLogManager;
 
 /**
  * @author oleg
@@ -10,7 +10,7 @@ import org.vika.routing.TimeManager;
 public class TimeManagerTest extends TestCase {
 
     public void testTime() throws InterruptedException {
-        final TimeManager timeManager = new TimeManager(100, 1000);
+        final TimeLogManager timeManager = new TimeLogManager(100, 1000);
         timeManager.start();
         Thread.sleep(2200);
         assertEquals(220, timeManager.getCurrentTime());

@@ -8,7 +8,7 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
-import org.vika.routing.TimeManager;
+import org.vika.routing.TimeLogManager;
 import org.vika.routing.routing.RoutingManager;
 
 import java.io.IOException;
@@ -20,14 +20,14 @@ import java.io.IOException;
 public class NodeAgent extends Agent {
     public static RoutingManager routingManager;
     public final LoadManager myLoadManager;
-    private final TimeManager myTimeManager;
+    private final TimeLogManager myTimeManager;
     private final NodeAgent[] myAgents;
     private final int myId;
 
     public NodeAgent(final int id,
                      final NodeAgent[] agents,
                      final LoadManager loadManager,
-                     final TimeManager timeManager) {
+                     final TimeLogManager timeManager) {
         myTimeManager = timeManager;
         myLoadManager = loadManager;
         myAgents = agents;
