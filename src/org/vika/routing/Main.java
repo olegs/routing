@@ -53,7 +53,9 @@ public class Main {
         final LoadManager loadManager = new LoadManager();
 
         // Time manager
-        final TimeLogManager timeManager = new TimeLogManager(TIME, QUANTUM_TIME);
+        final String outputFileName = "C:/work/routing/tests/org/vika/routing/network/result.txt";
+        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
+        final TimeLogManager timeManager = new TimeLogManager(writer, TIME, QUANTUM_TIME);
 
         // Initiate traffic agent
         final TrafficManager trafficManager = new TrafficManager();
@@ -78,9 +80,6 @@ public class Main {
 //        final AgentController sniffer =
 //               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
 //        sniffer.start();
-        final String outputFileName = "C:/work/routing/tests/org/vika/routing/network/result.txt";
-        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
-        timeManager.setMyLogWriter(writer);
         try {
             for (int i=0;i< EXPERIMENT_COUNT;i++){
                 emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);

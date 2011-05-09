@@ -10,7 +10,7 @@ import org.vika.routing.TimeLogManager;
 public class TimeManagerTest extends TestCase {
 
     public void testTime() throws InterruptedException {
-        final TimeLogManager timeManager = new TimeLogManager(100, 1000);
+        final TimeLogManager timeManager = new TimeLogManager(null, 100, 1000);
         timeManager.start();
         Thread.sleep(2200);
         assertEquals(220, timeManager.getCurrentTime());

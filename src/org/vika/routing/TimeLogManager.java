@@ -7,13 +7,14 @@ import java.io.IOException;
  * @author oleg
  */
 public class TimeLogManager {
+    private final BufferedWriter myLogWriter;
     private final int myTotalTime;
     private final int myQuantumTime;
     private long myStartTime;
     public int[] deliveryTimes;
-    private BufferedWriter myLogWriter;
 
-    public TimeLogManager(final int time, final int quantumTime) {
+    public TimeLogManager(final BufferedWriter logWriter, final int time, final int quantumTime) {
+        myLogWriter = logWriter;
         myTotalTime = time;
         myQuantumTime = quantumTime;
     }
@@ -32,6 +33,7 @@ public class TimeLogManager {
 
     public void log(final String message) {
         final String output = "[" + getCurrentTime() + "]" + message;
+        System.out.println(output);
         try {
             myLogWriter.write(output + "\n");
         } catch (IOException e) {
@@ -59,10 +61,6 @@ public class TimeLogManager {
         final int deliveryTime = getCurrentTime() - message.time;
         log("Successfully received message: " + message + " in time " + deliveryTime);
         deliveryTimes[message.id] = deliveryTime;
-    }
-
-   public void setMyLogWriter(final BufferedWriter logWriter) {
-        myLogWriter = logWriter;
     }
 
     public void printStatistics() {
