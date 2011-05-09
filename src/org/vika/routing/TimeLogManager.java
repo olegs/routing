@@ -39,7 +39,7 @@ public class TimeLogManager {
     }
 
     public void printToWriter(final String output) {
-        System.out.print(output);
+        System.out.println(output);
         try {
             myLogWriter.write(output + "\n");
         } catch (IOException e) {
