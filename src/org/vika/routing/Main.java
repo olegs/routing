@@ -32,8 +32,6 @@ public class Main {
     private static final int TIME = 100; // Total number of time quantum
     private static final int QUANTUM_TIME=100; // (0.01 sec) This is a time quantum used for modelling
     private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
-    private static final int NODE_LOAD_MAX = 10;
-    private static final int EDGE_LOAD_MAX = 10;
     private static final int EXPERIMENT_COUNT = 5;
 
     public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
@@ -102,8 +100,7 @@ public class Main {
                                 final TimeLogManager timeManager,
                                 final TrafficManager trafficManager) throws StaleProxyException, InterruptedException {
         // Generate random system load and traffic
-        final LoadManager.Load load =
-                LoadManager.generate(TIME, nodes.length, network.edges, NODE_LOAD_MAX, EDGE_LOAD_MAX);
+        final LoadManager.Load load = LoadManager.generate(TIME, network.edges);
         final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, MESSAGES, TIME);
         trafficManager.setTraffic(traffic);
         loadManager.setLoad(load);

@@ -66,7 +66,7 @@ public class DeikstraRoutingManager implements RoutingManager {
             final int channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
             wValues.put(key, wValue - channelLoad);
 
-            final float hValue = DEFAULT_NODE_ACTIVATION + myLoadManager.getNodeLoad(adjacentNodeId, currentTime);
+            final float hValue = DEFAULT_NODE_ACTIVATION;
             activationLevels.put(adjacentNodeId, hValue - wValue);
         }
         // Once we are done with activation levels, we can choose maximum of them
