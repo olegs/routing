@@ -16,7 +16,7 @@ import java.util.Map;
  * @author oleg
  */
 public class NeuroRoutingManager implements RoutingManager {
-    private static final float DEFAULT_NODE_ACTIVATION = 0.9f;
+    private static final float DEFAULT_NODE_ACTIVATION = 0.6f;
     private final Network myNetwork;
     private final LoadManager myLoadManager;
     private final NeuroNetwork myNeuroNetwork;
@@ -56,34 +56,38 @@ public class NeuroRoutingManager implements RoutingManager {
         }
         final Map<Integer, Float> activationLevels = new HashMap<Integer, Float>();
         final Map<Pair<Integer,Integer>, Float> wValues = myNeuroNetwork.neuroNodes[agentId].wValues;
-        for (Map.Entry<Integer, Channel> entry : adjacentNodes.entrySet()) {
-            final int adjacentNodeId = entry.getKey();
-            final Channel channel = entry.getValue();
 
-            // Get wValue
-            final Pair<Integer, Integer> key = new Pair<Integer, Integer>(adjacentNodeId, message.receiver);
-            final Float wValue = wValues.get(key);
-            // Update wValue
-            final float channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
-            wValues.put(key, wValue - channelLoad);
-            // TODO[oleg] fix me
-            final float hValue = DEFAULT_NODE_ACTIVATION;
-            activationLevels.put(adjacentNodeId, hValue - wValue);
+        while (true) {
+            for (Map.Entry<Integer, Channel> entry : adjacentNodes.entrySet()) {
+                final int adjacentNodeId = entry.getKey();
+                final Channel channel = entry.getValue();
+                // Calculate activation levels
+                final Pair<Integer, Integer> key = new Pair<Integer, Integer>(adjacentNodeId, message.receiver);
+                final Float wValue = wValues.get(key);
+                final float channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+                activationLevels.put(adjacentNodeId, wValue - channelLoad - DEFAULT_NODE_ACTIVATION);
+            }
+            // Once we are done with activation levels, we can choose maximum of them
+            int maxId = -1;
+            float maxActivationLevel = (float)-10e100;
+            for (Map.Entry<Integer, Float> entry : activationLevels.entrySet()) {
+                final Float value = entry.getValue();
+                if (value > maxActivationLevel){
+                  maxActivationLevel = value;
+                  maxId = entry.getKey();
+                }
+            }
+            if (maxActivationLevel < 0){
+                myTimeManager.log("All the activation levels are below zero, waiting...");
+                myTimeManager.sleep(1);
+            } else {
+                // Ok we have maximum activation level id, send message there.
+                final int channelTime = adjacentNodes.get(maxId).time;
+                myTimeManager.log("Sending " +  message + " to " + maxId + " channel time " + channelTime);
+                agent.sendMessageAfterDelay(maxId, message, channelTime);
+                return;
+            }
         }
-        // Once we are done with activation levels, we can choose maximum of them
-        int maxId = -1;
-        float maxActivationLevel = (float)-10e100;
-        for (Map.Entry<Integer, Float> entry : activationLevels.entrySet()) {
-            final Float value = entry.getValue();
-            if (value > maxActivationLevel){
-              maxActivationLevel = value;
-              maxId = entry.getKey();
-          }
-        }
-        // Ok we have maximum activation level id, send message there.
-        final int channelTime = adjacentNodes.get(maxId).time;
-        myTimeManager.log("Sending " +  message + " to " + maxId + " channel time " + channelTime);
-        agent.sendMessageAfterDelay(maxId, message, channelTime);
     }
 
     public int receivedMessages() {
