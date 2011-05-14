@@ -118,8 +118,8 @@ public class Main {
 
         // Spin lock while all the messages are not processed
         while (!neuroRoutingManager.areAllMessagesReceived()){
-            System.out.println("Waiting for neuro routing finished. Messages left: " + (MESSAGES - neuroRoutingManager.receivedMessages()));
-            Thread.sleep(1000);
+            timeManager.log("Waiting for routing finished. Messages left: " + (MESSAGES - neuroRoutingManager.receivedMessages()));
+            timeManager.wait(10);
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();
@@ -135,8 +135,8 @@ public class Main {
         container.acceptNewAgent("DeikstraTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
         // Spin lock while all the messages are not processed
         while (!deikstraRoutingManager.areAllMessagesReceived()){
-            System.out.println("Wait for deikstra routing finished. Messages left: " + (MESSAGES - deikstraRoutingManager.receivedMessages()));
-            Thread.sleep(1000);
+            timeManager.log("Waiting for routing finished. Messages left: " + (MESSAGES - deikstraRoutingManager.receivedMessages()));
+            timeManager.wait(10);
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();
