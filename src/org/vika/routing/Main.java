@@ -33,6 +33,7 @@ public class Main {
     private static final int QUANTUM_TIME=100; // (0.01 sec) This is a time quantum used for modelling
     private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
     private static final int EXPERIMENT_COUNT = 5;
+    private static final String PROJECT_HOME = "/work/routing/";
 
     public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
         // Create empty profile
@@ -43,7 +44,7 @@ public class Main {
         final AgentContainer container = Runtime.instance().createMainContainer(p);
 
         // Now we have successfully launched Agents platform
-        final String fileName = "C:/work/routing/tests/org/vika/routing/network/network.txt";
+        final String fileName = PROJECT_HOME + "tests/org/vika/routing/network/network.txt";
         final Network network = Parser.parse(fileName);
         final Node[] nodes = network.nodes;
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
@@ -51,7 +52,7 @@ public class Main {
         final LoadManager loadManager = new LoadManager();
 
         // Time manager
-        final String outputFileName = "C:/work/routing/tests/org/vika/routing/network/result.txt";
+        final String outputFileName = PROJECT_HOME + "tests/org/vika/routing/network/result.txt";
         final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
         final TimeLogManager timeManager = new TimeLogManager(writer, TIME, QUANTUM_TIME);
 
