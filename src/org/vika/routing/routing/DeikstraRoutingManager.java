@@ -63,7 +63,7 @@ public class DeikstraRoutingManager implements RoutingManager {
             final Pair<Integer, Integer> key = new Pair<Integer, Integer>(adjacentNodeId, message.receiver);
             final Float wValue = wValues.get(key);
             // Update wValue
-            final int channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+            final float channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
             wValues.put(key, wValue - channelLoad);
 
             final float hValue = DEFAULT_NODE_ACTIVATION;

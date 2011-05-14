@@ -24,8 +24,15 @@ public class LoadManager {
         return new Load(changes, edgesLoad);
     }
 
-    public int getEdgeLoad(final int id, final int currentTime) {
-        return myLoad.edgesLoad[id][currentTime % myLoad.changes];
+    public float getEdgeLoad(final int id, final int currentTime) {
+        final int value = myLoad.edgesLoad[id][currentTime % myLoad.changes];
+        switch (value){
+            case 0: return 0;
+            case 1: return 0.1f;
+            case 2: return 0.2f;
+            case 3: return 0.5f;
+        }
+        throw new IllegalStateException("Wrong load value:" + value);
     }
 
     public static class Load {
