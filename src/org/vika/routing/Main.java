@@ -8,6 +8,7 @@ import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
@@ -30,24 +31,20 @@ import java.util.List;
 public class Main {
 
     private static final int TIME = 100; // Total number of time quantum
-    private static final int QUANTUM_TIME=100; // (0.01 sec) This is a time quantum used for modelling
+    private static final int QUANTUM_TIME = 50; // (0.005 sec) This is a time quantum used for modelling
     private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
-    private static final int EXPERIMENT_COUNT = 5;
-    private static final String PROJECT_HOME = "/home/oleg/work/routing/";
+    private static final int EXPERIMENT_COUNT = 2;
 
     public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
         // Create empty profile
         final Properties props = new ExtendedProperties();
-        props.setProperty(Profile.LOCAL_SERVICE_MANAGER, "true");
-        props.setProperty(Profile.LOCAL_HOST, "127.0.0.1");
         // props.setProperty(Profile.GUI, "true");
         final Profile p = new ProfileImpl(props);
         // Start a new JADE runtime system
-        final Runtime runtime = Runtime.instance();
-        final AgentContainer container = runtime.createMainContainer(p);
+        final AgentContainer container = Runtime.instance().createMainContainer(p);
 
         // Now we have successfully launched Agents platform
-        final String fileName = PROJECT_HOME + "tests/org/vika/routing/network/network.txt";
+        final String fileName = "C:/work/routing/tests/org/vika/routing/network/network.txt";
         final Network network = Parser.parse(fileName);
         final Node[] nodes = network.nodes;
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
@@ -55,7 +52,7 @@ public class Main {
         final LoadManager loadManager = new LoadManager();
 
         // Time manager
-        final String outputFileName = PROJECT_HOME + "tests/org/vika/routing/network/result.txt";
+        final String outputFileName = "C:/work/routing/tests/org/vika/routing/network/result.txt";
         final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
         final TimeLogManager timeManager = new TimeLogManager(writer, TIME, QUANTUM_TIME);
 
@@ -79,9 +76,9 @@ public class Main {
         }
 
         // SnifferAgent creating
-//        final AgentController sniffer =
-//               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
-//        sniffer.start();
+        final AgentController sniffer =
+               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+        sniffer.start();
         try {
             for (int i=0;i< EXPERIMENT_COUNT;i++){
                 timeManager.printToWriter("Starting experiment #" + i);
@@ -118,16 +115,16 @@ public class Main {
 
         // Spin lock while all the messages are not processed
         while (!neuroRoutingManager.areAllMessagesReceived()){
-            timeManager.log("Waiting for routing finished. Messages left: " + (MESSAGES - neuroRoutingManager.receivedMessages()));
-            timeManager.wait(10);
+            System.out.println("Waiting for routing finished.\n" +
+                    "Messages left: " + neuroRoutingManager.leftMessages());
+            Thread.sleep(1000);
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();
         timeManager.saveNeuroStatistics();
 
-        // Create neuro routing manager
-        final RoutingManager deikstraRoutingManager =
-                new DeikstraRoutingManager(network, loadManager, timeManager, MESSAGES);
+        // Create OSPF routing manager
+        final RoutingManager deikstraRoutingManager = new DeikstraRoutingManager(network, loadManager, timeManager, MESSAGES);
         NodeAgent.routingManager = deikstraRoutingManager;
         timeManager.resetStatistics(MESSAGES);
         // Start traffic agent
@@ -135,8 +132,8 @@ public class Main {
         container.acceptNewAgent("DeikstraTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
         // Spin lock while all the messages are not processed
         while (!deikstraRoutingManager.areAllMessagesReceived()){
-            timeManager.log("Waiting for routing finished. Messages left: " + (MESSAGES - deikstraRoutingManager.receivedMessages()));
-            timeManager.wait(10);
+            System.out.println("Waiting for routing finished.\n" +
+                    "Messages left: " + deikstraRoutingManager.leftMessages());
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();

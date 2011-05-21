@@ -15,19 +15,16 @@ import java.util.Map;
 /**
  * @author oleg
  */
-public class NeuroRoutingManager implements RoutingManager {
+public class NeuroRoutingManager extends AbstractRoutingManager implements RoutingManager {
     private static final float DEFAULT_NODE_ACTIVATION = 0.6f;
     private final Network myNetwork;
     private final LoadManager myLoadManager;
     private final NeuroNetwork myNeuroNetwork;
     private final TimeLogManager myTimeManager;
-    private final int myRoutingEvents;
-    private int myReceivedMessages;
 
     public NeuroRoutingManager(final Network network, final LoadManager loadManager,
-                               final TimeLogManager timeManager, final int routingEvents) {
-        myRoutingEvents = routingEvents;
-        myReceivedMessages = 0;
+                               final TimeLogManager timeManager, final int totalMessages) {
+        super(totalMessages);
         System.out.println("Neuro network based routing manager is used!");
         myNetwork = network;
         myNeuroNetwork = new NeuroNetwork(network);
@@ -40,9 +37,8 @@ public class NeuroRoutingManager implements RoutingManager {
         final int currentTime = myTimeManager.getCurrentTime();
         final int agentId = agent.getId();
         if (agentId == message.receiver) {
-
             myTimeManager.messageReceived(message);
-            myReceivedMessages++;
+            messageReceived(message);
             return;
         }
         final Map<Integer, Channel> adjacentNodes = myNetwork.nodes[agentId].adjacentNodes;
@@ -88,13 +84,5 @@ public class NeuroRoutingManager implements RoutingManager {
                 return;
             }
         }
-    }
-
-    public int receivedMessages() {
-       return myReceivedMessages;
-    }
-
-    public boolean areAllMessagesReceived() {
-        return myReceivedMessages == myRoutingEvents;
     }
 }

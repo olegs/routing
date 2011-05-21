@@ -35,7 +35,7 @@ public class TrafficManager {
                     ? totalTime - timeConsumed
                     : r.nextInt(Math.min(singeDelayTreshold, totalTime - timeConsumed));
             timeConsumed += randomDelay;
-            result.add(new TrafficEvent(randomStart, randomDelay, new Message(i, randomTarget)));
+            result.add(new TrafficEvent(randomStart, randomDelay, new Message(i, randomStart, randomTarget)));
         }
         return result;
     }
