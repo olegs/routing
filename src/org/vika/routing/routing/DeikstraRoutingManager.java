@@ -33,11 +33,10 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         final List<Integer>[][] routingTable = new List[nodesNumber][nodesNumber];
         // Here we build open shortest path for all the nodes using Deikstra algorithm
         for (int nodeId=0;nodeId < nodesNumber;nodeId++){
-            final Node node = network.nodes[nodeId];
             routingTable[nodeId][nodeId] = Collections.emptyList();
             // Fill distances
             final int[] distances = new int[nodesNumber];
-            Arrays.fill(distances, -1);
+            Arrays.fill(distances, Integer.MAX_VALUE);
             distances[nodeId] = 0;
 
             // Fill settledNodes set
@@ -54,13 +53,14 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
             final PriorityQueue<Node> priorityQueue = new PriorityQueue<Node>(nodesNumber, new Comparator<Node>() {
                 public int compare(final Node node1, final Node node2) {
-                    if (settledNodes[node1.id] && !settledNodes[node2.id]){
-                        return 1;
-                    }
-                    if (settledNodes[node2.id] && !settledNodes[node1.id]){
+                    if (distances[node1.id] < distances[node2.id]){
                         return -1;
+                    } else
+                    if (distances[node1.id] > distances[node2.id]){
+                        return 1;
+                    } else {
+                        return 0;
                     }
-                    return distances[node1.id] < distances[node2.id] ? -1 : 1;
                 }
             });
             priorityQueue.addAll(Arrays.asList(network.nodes));
@@ -68,11 +68,12 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
             // Relax all the nodes one by one
             for (int settledNode=0;settledNode<nodesNumber;settledNode++){
                 final Node minimumNode = priorityQueue.poll();
+                priorityQueue.remove(minimumNode);
                 relaxNode(network, minimumNode, distances, settledNodes, reversePath, channelAvailability);
             }
 
             // Now we have all the distances and reverse paths, lets restore direct paths for routing
-            for (int j = 0; j< nodesNumber;j++){
+            for (int j = 0; j < nodesNumber;j++){
                 if (j == nodeId){
                     routingTable[nodeId][j] = Collections.emptyList();
                 } else {
@@ -111,15 +112,11 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                     continue;
                 }
 
-                if (distances[neighbour] == -1){
-                    reversePath[neighbour] = node.id;
-                    distances[neighbour] = channel.time;
-                } else
-                if (distances[neighbour] > distances[node.id] + channel.time) {
-                    reversePath[neighbour] = node.id;
-                    distances[neighbour] = distances[node.id] + channel.time;
-                }
+            if (distances[neighbour] == -1 || distances[neighbour] > distances[node.id] + channel.time) {
+                reversePath[neighbour] = node.id;
+                distances[neighbour] = distances[node.id] + channel.time;
             }
+        }
     }
 
 

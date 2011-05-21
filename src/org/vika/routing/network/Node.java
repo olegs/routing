@@ -18,4 +18,9 @@ public class Node {
         id = numberOfNodes++;
         Node.nodes = nodes;
     }
+
+    @Override
+    public String toString() {
+        return "Node[" + id + "]";
+    }
 }

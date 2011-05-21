@@ -8,7 +8,6 @@ import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
-import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
@@ -76,9 +75,9 @@ public class Main {
         }
 
         // SnifferAgent creating
-        final AgentController sniffer =
-               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
-        sniffer.start();
+//        final AgentController sniffer =
+//               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+//        sniffer.start();
         try {
             for (int i=0;i< EXPERIMENT_COUNT;i++){
                 timeManager.printToWriter("Starting experiment #" + i);
