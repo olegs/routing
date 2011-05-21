@@ -56,13 +56,11 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                     return distances[node1.id] < distances[node2.id] ? -1 : distances[node1.id] == distances[node2.id] ? 0 : 1;
                 }
             });
-            priorityQueue.addAll(Arrays.asList(network.nodes));
-
-            // Relax all the nodes one by one
-            for (int settledNode=0;settledNode<nodesNumber;settledNode++){
+            // Start with target node
+            priorityQueue.add(network.nodes[nodeId]);
+            while (!priorityQueue.isEmpty()) {
                 final Node minimumNode = priorityQueue.poll();
-                priorityQueue.remove(minimumNode);
-                relaxNode(network, minimumNode, distances, settledNodes, reversePath, channelAvailability);
+                relaxNode(network, minimumNode, priorityQueue, distances, settledNodes, reversePath, channelAvailability);
             }
 
             // Now we have all the distances and reverse paths, lets restore direct paths for routing
@@ -86,6 +84,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
     private static void relaxNode(final Network network,
                                   final Node node,
+                                  final PriorityQueue<Node> priorityQueue,
                                   final int[] distances,
                                   final boolean[] settledNodes,
                                   final int[] reversePath,
@@ -108,6 +107,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
             if (distances[neighbour] == -1 || distances[neighbour] > distances[node.id] + channel.time) {
                 reversePath[neighbour] = node.id;
                 distances[neighbour] = distances[node.id] + channel.time;
+                priorityQueue.add(network.nodes[neighbour]);
             }
         }
     }
