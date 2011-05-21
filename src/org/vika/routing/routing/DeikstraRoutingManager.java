@@ -53,14 +53,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
             final PriorityQueue<Node> priorityQueue = new PriorityQueue<Node>(nodesNumber, new Comparator<Node>() {
                 public int compare(final Node node1, final Node node2) {
-                    if (distances[node1.id] < distances[node2.id]){
-                        return -1;
-                    } else
-                    if (distances[node1.id] > distances[node2.id]){
-                        return 1;
-                    } else {
-                        return 0;
-                    }
+                    return distances[node1.id] < distances[node2.id] ? -1 : distances[node1.id] == distances[node2.id] ? 0 : 1;
                 }
             });
             priorityQueue.addAll(Arrays.asList(network.nodes));
