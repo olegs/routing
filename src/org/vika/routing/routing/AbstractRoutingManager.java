@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author oleg
  */
-public class AbstractRoutingManager {
+public abstract class AbstractRoutingManager implements RoutingManager {
     private List<Integer> myLeftMessages;
 
     public AbstractRoutingManager(final int totalMessages) {
