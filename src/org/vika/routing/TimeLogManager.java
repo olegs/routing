@@ -49,7 +49,6 @@ public class TimeLogManager {
     }
 
     public void sleep(final float delay) {
-        System.out.println("Delay : " + delay);
         // Wait for the delay number of quantum time
         try {
             Thread.sleep(Math.round(delay * myQuantumTime));
