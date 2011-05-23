@@ -130,6 +130,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
     public void route(final NodeAgent agent, final Message message) {
         myTimeManager.log("Request from " + agent.getId() + " to route " + message);
+        final int currentTime = Math.round(myTimeManager.getCurrentTime());
         final int agentId = agent.getId();
         if (agentId == message.receiver) {
             myTimeManager.messageReceived(message);
@@ -140,9 +141,9 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
         final int next = routingPath.get(myRoutingState[message.id]++);
         final Channel channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
-        final int channelTime = channel.time;
-        myTimeManager.log("Sending " +  message + " to " + next + " channel time " + channelTime);
-        agent.sendMessageAfterDelay(next, message, channelTime);
+        final float deliveryTime = channel.time + myLoadManager.getEdgeLoad(channel.id, currentTime);
+        myTimeManager.log("Sending " +  message + " to " + next + " channel time " + deliveryTime);
+        agent.sendMessageAfterDelay(next, message, deliveryTime);
     }
 }
 
