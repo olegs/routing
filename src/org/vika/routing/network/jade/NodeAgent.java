@@ -67,7 +67,7 @@ public class NodeAgent extends Agent {
     /**
      * Send message to the agent with given id
      */
-    public void sendMessageAfterDelay(final int receiver, final Message message, final int delay){
+    public void sendMessageAfterDelay(final int receiver, final Message message, final float delay){
         final AMSAgentDescription agent = findAMSAgentDescription(receiver);
         final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.addReceiver(agent.getName());

@@ -137,6 +137,7 @@ public class Main {
         while (!deikstraRoutingManager.areAllMessagesReceived()){
             System.out.println("Waiting for routing finished.\n" +
                     "Messages left: " + deikstraRoutingManager.leftMessages());
+			Thread.sleep(1000);
         }
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();

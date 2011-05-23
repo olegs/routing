@@ -3,6 +3,7 @@ package org.vika.routing;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * @author oleg
@@ -12,9 +13,9 @@ public class TimeLogManager {
     private final int myTotalTime;
     private final int myQuantumTime;
     private long myStartTime;
-    public int[] deliveryTimes;
-    private final ArrayList<int[]> neuroStatistics = new ArrayList<int[]>();
-    private final ArrayList<int[]> deikstraStatistics = new ArrayList<int[]>();
+    public float[] deliveryTimes;
+    private final ArrayList<float[]> neuroStatistics = new ArrayList<float[]>();
+    private final ArrayList<float[]> deikstraStatistics = new ArrayList<float[]>();
 
     public TimeLogManager(final BufferedWriter logWriter, final int time, final int quantumTime) {
         myLogWriter = logWriter;
@@ -30,8 +31,8 @@ public class TimeLogManager {
     /**
      * @return returns current time measured by quantum ranges
      */
-    public int getCurrentTime() {
-        return Math.round(((System.currentTimeMillis() - myStartTime) / myQuantumTime));
+    public float getCurrentTime() {
+        return ((System.currentTimeMillis() - myStartTime) / myQuantumTime);
     }
 
     public void log(final String message) {
@@ -47,38 +48,27 @@ public class TimeLogManager {
         }
     }
 
-    public void sleep(final int delay) {
-        final int startTime = getCurrentTime();
+    public void sleep(final float delay) {
         // Wait for the delay number of quantum time
         try {
-            Thread.sleep(delay * myQuantumTime);
+            Thread.sleep(Math.round(delay * myQuantumTime));
         } catch (InterruptedException e) {
             // Ignore, we should never face with
         }
-        final int realDelay = getCurrentTime() - startTime - delay;
-        assert -2 <= realDelay&& realDelay <= 2 : "Failed to wait for " + delay + " with difference: " + realDelay;
     }
 
     public void resetStatistics(final int messages){
-        deliveryTimes = new int[messages];
+        deliveryTimes = new float[messages];
     }
 
     public void messageReceived(final Message message) {
-        final int deliveryTime = getCurrentTime() - message.time;
+        final float deliveryTime = getCurrentTime() - message.time;
         log("Successfully received message: " + message + " in time " + deliveryTime);
         deliveryTimes[message.id] = deliveryTime;
     }
 
     public void printStatistics() {
-        printStatistics(deliveryTimes);
-    }
-
-    private void printStatistics(final int [] deliveryTimes) {
-        final StringBuilder builder = new StringBuilder("Deliver statistics:");
-        for (int time : deliveryTimes) {
-            builder.append(" " + time);
-        }
-        printToWriter(builder.toString());
+        printToWriter(Arrays.toString(deliveryTimes));
     }
 
     public void saveNeuroStatistics() {
@@ -91,12 +81,12 @@ public class TimeLogManager {
 
     public void printAllStatistics() {
         printToWriter("Neuro routing delivery times");
-        for (int[] ints : neuroStatistics) {
-           printStatistics(ints);
+        for (float[] f : neuroStatistics) {
+            printToWriter(Arrays.toString(f));
         }
         printToWriter("Deikstra routing delivery times");
-        for (int[] ints : deikstraStatistics) {
-           printStatistics(ints);
+        for (float[] f : deikstraStatistics) {
+            printToWriter(Arrays.toString(f));
         }
     }
 }

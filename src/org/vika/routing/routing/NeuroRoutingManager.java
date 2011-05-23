@@ -34,7 +34,7 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
 
     public void route(final NodeAgent agent, final Message message) {
         myTimeManager.log("Request from " + agent.getId() + " to route " + message);
-        final int currentTime = myTimeManager.getCurrentTime();
+        final int currentTime = Math.round(myTimeManager.getCurrentTime());
         final int agentId = agent.getId();
         if (agentId == message.receiver) {
             myTimeManager.messageReceived(message);
@@ -65,7 +65,7 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
             }
             // Once we are done with activation levels, we can choose maximum of them
             int maxId = -1;
-            float maxActivationLevel = (float)-10e100;
+            float maxActivationLevel = Float.MIN_VALUE;
             for (Map.Entry<Integer, Float> entry : activationLevels.entrySet()) {
                 final Float value = entry.getValue();
                 if (value > maxActivationLevel){
@@ -79,8 +79,10 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
             } else {
                 // Ok we have maximum activation level id, send message there.
                 final int channelTime = adjacentNodes.get(maxId).time;
-                myTimeManager.log("Sending " +  message + " to " + maxId + " channel time " + channelTime);
-                agent.sendMessageAfterDelay(maxId, message, channelTime);
+                final float edgeLoad = myLoadManager.getEdgeLoad(adjacentNodes.get(maxId).id, currentTime);
+                final float deliveryTime = edgeLoad + channelTime;
+                myTimeManager.log("Sending " + message + " to " + maxId + " channel time " + deliveryTime);
+                agent.sendMessageAfterDelay(maxId, message, deliveryTime);
                 return;
             }
         }
