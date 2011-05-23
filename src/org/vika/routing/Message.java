@@ -9,7 +9,7 @@ public class Message implements Serializable {
     public int id;
     public final int initiator;
     public final int receiver;
-    public int time = -1;
+    public float time = -1;
 
     public Message(final int id, final int initiator, final int receiver) {
         this.id = id;

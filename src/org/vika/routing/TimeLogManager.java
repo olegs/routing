@@ -32,7 +32,7 @@ public class TimeLogManager {
      * @return returns current time measured by quantum ranges
      */
     public float getCurrentTime() {
-        return ((System.currentTimeMillis() - myStartTime) / myQuantumTime);
+        return ((float)(System.currentTimeMillis() - myStartTime)) / myQuantumTime;
     }
 
     public void log(final String message) {
@@ -49,6 +49,7 @@ public class TimeLogManager {
     }
 
     public void sleep(final float delay) {
+        System.out.println("Delay : " + delay);
         // Wait for the delay number of quantum time
         try {
             Thread.sleep(Math.round(delay * myQuantumTime));
