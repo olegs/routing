@@ -8,6 +8,7 @@ import jade.util.ExtendedProperties;
 import jade.util.leap.ArrayList;
 import jade.util.leap.Properties;
 import jade.wrapper.AgentContainer;
+import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
@@ -20,6 +21,7 @@ import org.vika.routing.routing.NeuroRoutingManager;
 import org.vika.routing.routing.RoutingManager;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
@@ -29,35 +31,52 @@ import java.util.List;
  */
 public class Main {
 
-    private static final int TIME = 100; // Total number of time quantum
-    private static final int QUANTUM_TIME=100; // (0.01 sec) This is a time quantum used for modelling
-    private static final int MESSAGES = 10; // How many messages will generated in traffic and spread during TIME
-    private static final int EXPERIMENT_COUNT = 2;
-    private static final String PROJECT_HOME = "C:/work/routing/";
-
     public static void main(String[] args) throws IOException, ControllerException, InterruptedException {
+        final Options options = Options.readOptions(args);
+        final String inputFileName = options.getInputFile();
+        if (inputFileName == null){
+            System.err.println("Input file not specified");
+            Options.printUsage();
+            System.exit(0);
+        }
+        final File inputFile = new File(inputFileName);
+        if (!inputFile.exists() || inputFile.isDirectory()){
+            System.err.println("Wrong input file: " + inputFile);
+            Options.printUsage();
+            System.exit(0);
+        }
+        final String outputFileName = options.getOutputFile();
+        if (outputFileName == null){
+            System.err.println("Output file not specified");
+            Options.printUsage();
+            System.exit(0);
+        }
+        final File outputFile = new File(outputFileName);
+        if (!outputFile.exists() || outputFile.isDirectory()){
+            System.err.println("Wrong output file: " + outputFile);
+            Options.printUsage();
+            System.exit(0);
+        }
+
         // Create empty profile
         final Properties props = new ExtendedProperties();
         props.setProperty(Profile.LOCAL_SERVICE_MANAGER, "true");
         props.setProperty(Profile.LOCAL_HOST, "127.0.0.1");
-        // props.setProperty(Profile.GUI, "true");
         final Profile p = new ProfileImpl(props);
         // Start a new JADE runtime system
         final Runtime runtime = Runtime.instance();
         final AgentContainer container = runtime.createMainContainer(p);
 
         // Now we have successfully launched Agents platform
-        final String fileName = PROJECT_HOME + "tests/org/vika/routing/network/network.txt";
-        final Network network = Parser.parse(fileName);
+        final Network network = Parser.parse(inputFile);
         final Node[] nodes = network.nodes;
         final NodeAgent[] nodeAgents = new NodeAgent[nodes.length];
 
         final LoadManager loadManager = new LoadManager();
 
         // Time manager
-        final String outputFileName = PROJECT_HOME + "tests/org/vika/routing/network/result.txt";
-        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
-        final TimeLogManager timeManager = new TimeLogManager(writer, TIME, QUANTUM_TIME);
+        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        final TimeLogManager timeManager = new TimeLogManager(writer, options.getTimeLimit(), options.getTimeQuant());
 
         // Initiate traffic agent
         final TrafficManager trafficManager = new TrafficManager();
@@ -79,13 +98,15 @@ public class Main {
         }
 
         // SnifferAgent creating
-//        final AgentController sniffer =
-//               container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
-//        sniffer.start();
+        if (options.showUi()) {
+            final AgentController sniffer =
+                   container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
+            sniffer.start();
+        }
         try {
-            for (int i=0;i< EXPERIMENT_COUNT;i++){
+            for (int i=0;i<options.getExperimentCount();i++){
                 timeManager.printToWriter("Starting experiment #" + i);
-                emulate(container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+                emulate(options, container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
             }
             timeManager.printAllStatistics();
 
@@ -96,7 +117,8 @@ public class Main {
         System.exit(0);
     }
 
-    private static void emulate(final AgentContainer container,
+    private static void emulate(final Options options,
+                                final AgentContainer container,
                                 final Network network,
                                 final Node[] nodes,
                                 final NodeAgent[] nodeAgents,
@@ -104,15 +126,15 @@ public class Main {
                                 final TimeLogManager timeManager,
                                 final TrafficManager trafficManager) throws StaleProxyException, InterruptedException {
         // Generate random system load and traffic
-        final LoadManager.Load load = LoadManager.generate(TIME, network.edges);
-        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, MESSAGES, TIME);
+        final LoadManager.Load load = LoadManager.generate(options.getTimeLimit(), network.edges);
+        final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, options.getMessagesCount(), options.getTimeLimit());
         trafficManager.setTraffic(traffic);
         loadManager.setLoad(load);
 
         // Create neuro routing manager
-        final RoutingManager neuroRoutingManager = new NeuroRoutingManager(network, loadManager, timeManager, MESSAGES);
+        final RoutingManager neuroRoutingManager = new NeuroRoutingManager(network, loadManager, timeManager, options.getMessagesCount());
         NodeAgent.routingManager = neuroRoutingManager;
-        timeManager.resetStatistics(MESSAGES);
+        timeManager.resetStatistics(options.getMessagesCount());
         // Start traffic agent
         container.acceptNewAgent("NeuroTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();
 
@@ -127,9 +149,9 @@ public class Main {
         timeManager.saveNeuroStatistics();
 
         // Create OSPF routing manager
-        final RoutingManager deikstraRoutingManager = new DeikstraRoutingManager(network, loadManager, timeManager, MESSAGES);
+        final RoutingManager deikstraRoutingManager = new DeikstraRoutingManager(network, loadManager, timeManager, options.getMessagesCount());
         NodeAgent.routingManager = deikstraRoutingManager;
-        timeManager.resetStatistics(MESSAGES);
+        timeManager.resetStatistics(options.getMessagesCount());
         // Start traffic agent
         trafficManager.reset();
         container.acceptNewAgent("DeikstraTrafficAgent", new TrafficAgent(nodeAgents, trafficManager, timeManager)).start();

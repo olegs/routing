@@ -2,6 +2,7 @@ package org.vika.routing.network;
 
 import com.sun.tools.javac.util.Pair;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,8 +13,8 @@ import java.util.Scanner;
  * @author oleg
  */
 public class Parser {
-    public static Network parse(final String fileName) throws IOException {
-        final FileInputStream stream = new FileInputStream(fileName);
+    public static Network parse(final File file) throws IOException {
+        final FileInputStream stream = new FileInputStream(file);
         try {
             final Scanner scanner = new Scanner(stream);
             // Number of nodes in a network
