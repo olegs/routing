@@ -1,6 +1,5 @@
 package org.vika.routing;
 
-import com.sun.istack.internal.NotNull;
 
 /**
  * @author oleg
@@ -10,7 +9,7 @@ public class Pair<A, B> {
     public final B snd;
 
 
-    public Pair(@NotNull final A fst, @NotNull final B snd) {
+    public Pair(final A fst, final B snd) {
         this.fst = fst;
         this.snd = snd;
     }
