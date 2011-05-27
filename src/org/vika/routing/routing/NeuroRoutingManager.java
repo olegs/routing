@@ -1,8 +1,8 @@
 package org.vika.routing.routing;
 
-import com.sun.tools.javac.util.Pair;
 import org.vika.routing.LoadManager;
 import org.vika.routing.Message;
+import org.vika.routing.Pair;
 import org.vika.routing.TimeLogManager;
 import org.vika.routing.network.Channel;
 import org.vika.routing.network.Network;

@@ -1,7 +1,7 @@
 package org.vika.routing.network;
 
-import com.sun.tools.javac.util.Pair;
 import junit.framework.TestCase;
+import org.vika.routing.Pair;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import java.util.Map;
 public class NetworkTest extends TestCase {
     public void testSimple() throws IOException {
         final Network n = Parser.parse(new File("C:/work/routing/tests/org/vika/routing/network/network.txt"));
-        final Node[] nodes = n.nodes;
         final NeuroNetwork network = new NeuroNetwork(n);
         final StringBuilder builder = new StringBuilder();
         for (NeuroNode neuroNode : network.neuroNodes) {

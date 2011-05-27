@@ -1,6 +1,7 @@
 package org.vika.routing.network;
 
-import com.sun.tools.javac.util.Pair;
+
+import org.vika.routing.Pair;
 
 import java.io.File;
 import java.io.FileInputStream;
