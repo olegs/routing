@@ -9,6 +9,7 @@ public class Options {
     private static final String INPUT_FILE = "input";
     private static final String OUTPUT_FILE = "output";
     private static final String TIME_QUANT = "quantum";
+    private static final String PORT = "port";
     private static final String TIME_LIMIT = "time";
     private static final String MESSAGE_COUNT = "messages";
     private static final String EXPERIMENT_COUNT = "experiments";
@@ -22,6 +23,10 @@ public class Options {
 
     public String getOutputFile(){
         return myValues.get(OUTPUT_FILE);
+    }
+
+    public int getPort(){
+        return myValues.containsKey(PORT) ? Integer.valueOf(myValues.get(PORT)) : 1099;
     }
 
     public int getTimeQuant(){
@@ -62,6 +67,11 @@ public class Options {
             else if (OUTPUT_FILE.equals(arg)) {
                 ensureNotEnd(args, i);
                 result.myValues.put(OUTPUT_FILE, args[i+1]);
+                i++;
+            }
+            else if (PORT.equals(arg)) {
+                ensureNotEnd(args, i);
+                result.myValues.put(PORT, args[i+1]);
                 i++;
             }
             else if (MESSAGE_COUNT.equals(arg)) {
@@ -108,6 +118,7 @@ public class Options {
         System.out.println("Usage description:");
         System.out.println("Input file: --" + INPUT_FILE);
         System.out.println("Output file: --" + OUTPUT_FILE);
+        System.out.println("Port: --" + PORT + " default = 1099");
         System.out.println("Time quantum: --" + TIME_QUANT + " default = 100");
         System.out.println("Time limit: --" + TIME_LIMIT + " default = 100");
         System.out.println("Messages count: --" + MESSAGE_COUNT + " default = 1");

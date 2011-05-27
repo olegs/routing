@@ -56,6 +56,7 @@ public class Main {
         final Properties props = new ExtendedProperties();
         props.setProperty(Profile.LOCAL_SERVICE_MANAGER, "true");
         props.setProperty(Profile.LOCAL_HOST, "127.0.0.1");
+        props.setProperty(Profile.LOCAL_PORT, String.valueOf(options.getPort()));
         final Profile p = new ProfileImpl(props);
         // Start a new JADE runtime system
         final Runtime runtime = Runtime.instance();
