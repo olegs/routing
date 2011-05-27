@@ -98,10 +98,19 @@ public class Options {
         System.out.println("Usage description:");
         System.out.println("Input file: --" + INPUT_FILE);
         System.out.println("Output file: --" + OUTPUT_FILE);
-        System.out.println("Time quantum: --" + TIME_QUANT);
-        System.out.println("Time limit: --" + TIME_LIMIT);
-        System.out.println("Messages count: --" + MESSAGE_COUNT);
-        System.out.println("Experiment count: --" + EXPERIMENT_COUNT);
+        System.out.println("Time quantum: --" + TIME_QUANT + " default = 100");
+        System.out.println("Time limit: --" + TIME_LIMIT + " default = 100");
+        System.out.println("Messages count: --" + MESSAGE_COUNT + " default = 1");
+        System.out.println("Experiment count: --" + EXPERIMENT_COUNT + " default = 1");
         System.out.println("Show UI: --" + SHOW);
+        System.out.println("Sample input file:\n" +
+                "5\n" +
+                "6\n" +
+                "0 1 6\n" +
+                "1 2 5\n" +
+                "2 3 3\n" +
+                "2 0 4\n" +
+                "0 3 2\n" +
+                "3 4 1");
     }
 }
