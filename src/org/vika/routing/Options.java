@@ -64,6 +64,16 @@ public class Options {
                 result.myValues.put(OUTPUT_FILE, args[i+1]);
                 i++;
             }
+            else if (MESSAGE_COUNT.equals(arg)) {
+                ensureNotEnd(args, i);
+                result.myValues.put(MESSAGE_COUNT, args[i+1]);
+                i++;
+            }
+            else if (EXPERIMENT_COUNT.equals(arg)) {
+                ensureNotEnd(args, i);
+                result.myValues.put(EXPERIMENT_COUNT, args[i+1]);
+                i++;
+            }
             else if (TIME_QUANT.equals(arg)) {
                 ensureNotEnd(args, i);
                 result.myValues.put(TIME_QUANT, args[i+1]);

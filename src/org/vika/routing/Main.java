@@ -51,12 +51,6 @@ public class Main {
             Options.printUsage();
             System.exit(0);
         }
-        final File outputFile = new File(outputFileName);
-        if (!outputFile.exists() || outputFile.isDirectory()){
-            System.err.println("Wrong output file: " + outputFile);
-            Options.printUsage();
-            System.exit(0);
-        }
 
         // Create empty profile
         final Properties props = new ExtendedProperties();
@@ -75,7 +69,7 @@ public class Main {
         final LoadManager loadManager = new LoadManager();
 
         // Time manager
-        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        final BufferedWriter writer = new BufferedWriter(new FileWriter(outputFileName));
         final TimeLogManager timeManager = new TimeLogManager(writer, options.getTimeLimit(), options.getTimeQuant());
 
         // Initiate traffic agent
