@@ -108,6 +108,7 @@ public class Main {
             for (Map.Entry<Pair<Integer, Integer>, Float> entry : wValues.entrySet()) {
                 System.out.println(entry.getKey().fst + " " + entry.getKey().snd + " " + entry.getValue());
             }
+            System.exit(0);
         }
         try {
             for (int i=0;i<options.getExperimentCount();i++){
