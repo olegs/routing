@@ -14,6 +14,7 @@ public class Options {
     private static final String MESSAGE_COUNT = "messages";
     private static final String EXPERIMENT_COUNT = "experiments";
     private static final String SHOW = "show";
+    private static final String W = "w";
     private boolean showUi = false;
     private final HashMap<String, String> myValues = new HashMap<String, String>();
 
@@ -47,6 +48,10 @@ public class Options {
 
     public boolean showUi() {
         return showUi;
+    }
+
+    public int getW(){
+        return myValues.containsKey(W) ? Integer.valueOf(myValues.get(W)) : -1;
     }
 
     public static Options readOptions(final String[] args){
@@ -97,6 +102,11 @@ public class Options {
             else if (SHOW.equals(arg)){
                 result.showUi = true;
             }
+            else if (W.equals(arg)) {
+                ensureNotEnd(args, i);
+                result.myValues.put(W, args[i+1]);
+                i++;
+            }
             else {
                 System.err.println("Unknown argument: " + arg);
                 printUsage();
@@ -124,6 +134,7 @@ public class Options {
         System.out.println("Messages count: --" + MESSAGE_COUNT + " default = 1");
         System.out.println("Experiment count: --" + EXPERIMENT_COUNT + " default = 1");
         System.out.println("Show UI: --" + SHOW);
+        System.out.println("W: --" + W);
         System.out.println("Sample input file:\n" +
                 "5\n" +
                 "6\n" +

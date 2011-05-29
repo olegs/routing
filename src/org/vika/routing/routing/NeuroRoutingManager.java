@@ -22,12 +22,12 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
     private final NeuroNetwork myNeuroNetwork;
     private final TimeLogManager myTimeManager;
 
-    public NeuroRoutingManager(final Network network, final LoadManager loadManager,
+    public NeuroRoutingManager(final Network network, final NeuroNetwork neuroNetwork, final LoadManager loadManager,
                                final TimeLogManager timeManager, final int totalMessages) {
         super(totalMessages);
         System.out.println("Neuro network based routing manager is used!");
         myNetwork = network;
-        myNeuroNetwork = new NeuroNetwork(network);
+        myNeuroNetwork = neuroNetwork;
         myLoadManager = loadManager;
         myTimeManager = timeManager;
     }

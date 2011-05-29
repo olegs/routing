@@ -12,6 +12,7 @@ import jade.wrapper.AgentController;
 import jade.wrapper.ControllerException;
 import jade.wrapper.StaleProxyException;
 import org.vika.routing.network.Network;
+import org.vika.routing.network.NeuroNetwork;
 import org.vika.routing.network.Node;
 import org.vika.routing.network.Parser;
 import org.vika.routing.network.jade.NodeAgent;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author oleg
@@ -98,10 +100,19 @@ public class Main {
                    container.createNewAgent("sniffer", "jade.tools.sniffer.Sniffer", new Object[]{builder.toString()});
             sniffer.start();
         }
+        final NeuroNetwork neuroNetwork = new NeuroNetwork(network);
+        final int w = options.getW();
+        if (w != -1){
+            final Map<Pair<Integer,Integer>,Float> wValues = neuroNetwork.neuroNodes[w].wValues;
+            System.out.println("Printing w values (neighbour, destination, values) for node: " + w);
+            for (Map.Entry<Pair<Integer, Integer>, Float> entry : wValues.entrySet()) {
+                System.out.println(entry.getKey().fst + " " + entry.getKey().snd + " " + entry.getValue());
+            }
+        }
         try {
             for (int i=0;i<options.getExperimentCount();i++){
                 timeManager.printToWriter("Starting experiment #" + i);
-                emulate(options, container, network, nodes, nodeAgents, loadManager, timeManager, trafficManager);
+                emulate(options, container, network, neuroNetwork, nodes, nodeAgents, loadManager, timeManager, trafficManager);
             }
             timeManager.printAllStatistics();
 
@@ -115,6 +126,7 @@ public class Main {
     private static void emulate(final Options options,
                                 final AgentContainer container,
                                 final Network network,
+                                final NeuroNetwork neuroNetwork,
                                 final Node[] nodes,
                                 final NodeAgent[] nodeAgents,
                                 final LoadManager loadManager,
@@ -127,7 +139,7 @@ public class Main {
         loadManager.setLoad(load);
 
         // Create neuro routing manager
-        final RoutingManager neuroRoutingManager = new NeuroRoutingManager(network, loadManager, timeManager, options.getMessagesCount());
+        final RoutingManager neuroRoutingManager = new NeuroRoutingManager(network, neuroNetwork, loadManager, timeManager, options.getMessagesCount());
         NodeAgent.routingManager = neuroRoutingManager;
         timeManager.resetStatistics(options.getMessagesCount());
         // Start traffic agent
