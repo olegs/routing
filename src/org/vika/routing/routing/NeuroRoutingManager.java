@@ -45,7 +45,7 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
         // Send message to the adjacent node it receiver is one of them
         if (adjacentNodes.containsKey(message.receiver)) {
             // We should add non-blocking transmit message with given time
-            final int channelTime = adjacentNodes.get(message.receiver).time;
+            final float channelTime = adjacentNodes.get(message.receiver).time;
             myTimeManager.log("Sending " +  message + " to " + message.receiver + " channel time " + channelTime);
             agent.sendMessageAfterDelay(message.receiver, message, channelTime);
             return;
@@ -78,7 +78,7 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
                 myTimeManager.sleep(1);
             } else {
                 // Ok we have maximum activation level id, send message there.
-                final int channelTime = adjacentNodes.get(maxId).time;
+                final float channelTime = adjacentNodes.get(maxId).time;
                 final float edgeLoad = myLoadManager.getEdgeLoad(adjacentNodes.get(maxId).id, currentTime);
                 final float deliveryTime = edgeLoad + channelTime;
                 myTimeManager.log("Sending " + message + " to " + maxId + " channel time " + deliveryTime);

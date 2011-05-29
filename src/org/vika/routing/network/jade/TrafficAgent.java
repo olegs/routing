@@ -33,7 +33,7 @@ public class TrafficAgent extends Agent {
         final AID aid = agents[receiver].getAID();
         description.setName(aid);
         final AMSAgentDescription agent = description;
-        ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+        final ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
         msg.addReceiver(agent.getName());
         try {
             msg.setContentObject(message);

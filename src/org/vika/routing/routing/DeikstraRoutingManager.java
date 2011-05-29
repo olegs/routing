@@ -35,8 +35,8 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         for (int nodeId=0;nodeId < nodesNumber;nodeId++){
             routingTable[nodeId][nodeId] = Collections.emptyList();
             // Fill distances
-            final int[] distances = new int[nodesNumber];
-            Arrays.fill(distances, Integer.MAX_VALUE);
+            final float[] distances = new float[nodesNumber];
+            Arrays.fill(distances, Float.MAX_VALUE);
             distances[nodeId] = 0;
 
             // Fill settledNodes set
@@ -85,7 +85,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
     private static void relaxNode(final Network network,
                                   final Node node,
                                   final PriorityQueue<Node> priorityQueue,
-                                  final int[] distances,
+                                  final float[] distances,
                                   final boolean[] settledNodes,
                                   final int[] reversePath,
                                   final boolean[] channelAvailability) {

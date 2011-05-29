@@ -19,7 +19,7 @@ public class NeuroNetwork extends Network {
 
     private static NeuroNode[] buildWValues(final Node[] nodes) {
         // Here we run Floyd algorithm to get all the distances between any pair of vertexes in graph
-        final Integer[][] distances = new Integer[nodes.length][nodes.length];
+        final float[][] distances = new float[nodes.length][nodes.length];
         // Initialization
         for (int i = 0; i < nodes.length; i++) {
             final Map<Integer, Channel> adjacentNodes = nodes[i].adjacentNodes;
@@ -33,7 +33,7 @@ public class NeuroNetwork extends Network {
                 for (int k = 0; k < nodes.length; k++) {
                     if (i != j && i != k && j != k &&
                             distances[i][j] != Integer.MAX_VALUE && distances[j][k] != Integer.MAX_VALUE) {
-                        final int alternativePath = distances[i][j] + distances[j][k];
+                        final float alternativePath = distances[i][j] + distances[j][k];
                         if (distances[i][k] > alternativePath) {
                             distances[i][k] = alternativePath;
                         }
@@ -54,8 +54,8 @@ public class NeuroNetwork extends Network {
                     if (i == j || number == i || number == j){
                         continue;
                     }
-                    final float w = (float)distances[i][j] /
-                            (float)(nodes[i].adjacentNodes.get(number).time + distances[number][j]);
+                    final float w = distances[i][j] /
+                            (nodes[i].adjacentNodes.get(number).time + distances[number][j]);
                     neuroNode.wValues.put(new Pair<Integer, Integer>(number, j), w);
                 }
             }

@@ -19,7 +19,7 @@ public abstract class AbstractRoutingManager implements RoutingManager {
         }
     }
 
-    protected void messageReceived(final Message message) {
+    protected synchronized void messageReceived(final Message message) {
         myLeftMessages.remove((Integer)message.id);
     }
 
