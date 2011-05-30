@@ -133,6 +133,8 @@ public class Main {
                                 final LoadManager loadManager,
                                 final TimeLogManager timeManager,
                                 final TrafficManager trafficManager) throws StaleProxyException, InterruptedException {
+        System.gc();
+        Thread.sleep(1000);
         // Generate random system load and traffic
         final LoadManager.Load load = LoadManager.generate(options.getTimeLimit(), network.edges);
         final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, options.getMessagesCount(), options.getTimeLimit());
@@ -155,6 +157,9 @@ public class Main {
         timeManager.log("Routing successfully finished");
         timeManager.printStatistics();
         timeManager.saveNeuroStatistics();
+
+        System.gc();
+        Thread.sleep(1000);
 
         // Create OSPF routing manager
         final RoutingManager deikstraRoutingManager = new DeikstraRoutingManager(network, loadManager, timeManager, options.getMessagesCount());
