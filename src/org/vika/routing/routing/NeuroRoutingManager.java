@@ -68,12 +68,12 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
             float maxActivationLevel = Float.MIN_VALUE;
             for (Map.Entry<Integer, Float> entry : activationLevels.entrySet()) {
                 final Float value = entry.getValue();
-                if (value > maxActivationLevel){
+                if (value > 0 && value > maxActivationLevel){
                   maxActivationLevel = value;
                   maxId = entry.getKey();
                 }
             }
-            if (maxActivationLevel < 0){
+            if (maxId == -1){
                 myTimeManager.log("All the activation levels are below zero, waiting...");
                 myTimeManager.sleep(1);
             } else {
