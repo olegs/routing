@@ -60,7 +60,8 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
                 // Calculate activation levels
                 final Pair<Integer, Integer> key = new Pair<Integer, Integer>(adjacentNodeId, message.receiver);
                 final Float wValue = wValues.get(key);
-                final float channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+                // Here we should take into account loading by time
+                final float channelLoad = myLoadManager.getEdgeLoad(channel.id, Math.round(myTimeManager.getCurrentTime()));
                 activationLevels.put(adjacentNodeId, wValue - channelLoad - DEFAULT_NODE_ACTIVATION);
             }
             // Once we are done with activation levels, we can choose maximum of them
