@@ -13,33 +13,54 @@ public class LoadManager {
         myLoad = load;
     }
 
-    public static Load generate(final int changes, final int edges) {
+    public static Load generate(final int changes, final int edges, final boolean loaded) {
         final Random r = new Random();
-        final int[][] edgesLoad = new int[edges][changes];
+        final float[][] edgesLoad = new float[edges][changes];
         for (int i=0;i<changes;i++){
             for (int j=0;j<edges;j++){
-                edgesLoad[j][i] = r.nextInt(3);
+                edgesLoad[j][i] = generateValue(r, loaded);
             }
         }
         return new Load(changes, edgesLoad);
     }
 
-    public float getEdgeLoad(final int id, final int currentTime) {
-        final int value = myLoad.edgesLoad[id][currentTime % myLoad.changes];
-        switch (value){
-            case 0: return 0;
-            case 1: return 0.1f;
-            case 2: return 0.2f;
-            case 3: return 0.5f;
+    // Here we emulate necessarily probabilities
+    private static float generateValue(final Random r, final boolean loaded) {
+        if (!loaded){
+            final int i = r.nextInt(4);
+            if (i==0){
+                return 0;
+            }
+            if (i==1){
+                return 0.1f;
+            }
+            if (i==2){
+                return 0.2f;
+            }
+            return 0.5f;
         }
-        throw new IllegalStateException("Wrong load value:" + value);
+        final int i = r.nextInt(100);
+        if (i < 15){
+            return 0f;
+        }
+        if (i < 15 + 35){
+            return 0.1f;
+        }
+        if (i < 15 + 35 + 35){
+            return 0.2f;
+        }
+        return 0.5f;
+    }
+
+    public float getEdgeLoad(final int id, final int currentTime) {
+        return myLoad.edgesLoad[id][currentTime % myLoad.changes];
     }
 
     public static class Load {
        final int changes;
-       final int[][] edgesLoad;
+       final float[][] edgesLoad;
 
-        public Load(int changes, int[][] edgesLoad) {
+        public Load(int changes, float[][] edgesLoad) {
             this.changes = changes;
             this.edgesLoad = edgesLoad;
         }

@@ -15,8 +15,10 @@ public class Options {
     private static final String EXPERIMENT_COUNT = "experiments";
     private static final String SHOW = "show";
     private static final String W = "w";
+    private static final String LOADED = "loaded";
     private boolean showUi = false;
     private final HashMap<String, String> myValues = new HashMap<String, String>();
+    private boolean loaded;
 
     public String getInputFile(){
         return myValues.get(INPUT_FILE);
@@ -52,6 +54,10 @@ public class Options {
 
     public int getW(){
         return myValues.containsKey(W) ? Integer.valueOf(myValues.get(W)) : -1;
+    }
+
+    public boolean isLoaded(){
+        return loaded;
     }
 
     public static Options readOptions(final String[] args){
@@ -102,6 +108,9 @@ public class Options {
             else if (SHOW.equals(arg)){
                 result.showUi = true;
             }
+            else if (LOADED.equals(arg)){
+                result.loaded = true;
+            }
             else if (W.equals(arg)) {
                 ensureNotEnd(args, i);
                 result.myValues.put(W, args[i+1]);
@@ -134,6 +143,7 @@ public class Options {
         System.out.println("Messages count: --" + MESSAGE_COUNT + " default = 1");
         System.out.println("Experiment count: --" + EXPERIMENT_COUNT + " default = 1");
         System.out.println("Show UI: --" + SHOW);
+        System.out.println("System load: --" + LOADED);
         System.out.println("W: --" + W);
         System.out.println("Sample input file:\n" +
                 "5\n" +

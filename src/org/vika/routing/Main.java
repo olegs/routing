@@ -136,7 +136,7 @@ public class Main {
         System.gc();
         Thread.sleep(1000);
         // Generate random system load and traffic
-        final LoadManager.Load load = LoadManager.generate(options.getTimeLimit(), network.edges);
+        final LoadManager.Load load = LoadManager.generate(options.getTimeLimit(), network.edges, options.isLoaded());
         final List<TrafficManager.TrafficEvent> traffic = TrafficManager.generate(nodes.length, options.getMessagesCount(), options.getTimeLimit());
         trafficManager.setTraffic(traffic);
         loadManager.setLoad(load);
