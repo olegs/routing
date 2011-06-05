@@ -16,8 +16,8 @@ public class LoadManager {
     public static Load generate(final int changes, final int edges, final boolean loaded) {
         final Random r = new Random();
         final float[][] edgesLoad = new float[edges][changes];
-        for (int i=0;i<changes;i++){
-            for (int j=0;j<edges;j++){
+        for (int i = 0; i < changes; i++) {
+            for (int j = 0; j < edges; j++) {
                 edgesLoad[j][i] = generateValue(r, loaded);
             }
         }
@@ -26,30 +26,30 @@ public class LoadManager {
 
     // Here we emulate necessarily probabilities
     private static float generateValue(final Random r, final boolean loaded) {
-        if (!loaded){
-            final int i = r.nextInt(4);
-            if (i==0){
-                return 0;
+        final int i = r.nextInt(10);
+        if (loaded) {
+            if (i < 1) {
+                return 0f;
             }
-            if (i==1){
+            if (i < 1 + 4) {
                 return 0.1f;
             }
-            if (i==2){
+            if (i < 1 + 4 + 4) {
+                return 0.2f;
+            }
+            return 0.5f;
+        } else {
+            if (i < 3) {
+                return 0f;
+            }
+            if (i < 3 + 3) {
+                return 0.1f;
+            }
+            if (i < 3 + 3 + 3) {
                 return 0.2f;
             }
             return 0.5f;
         }
-        final int i = r.nextInt(100);
-        if (i < 15){
-            return 0f;
-        }
-        if (i < 15 + 35){
-            return 0.1f;
-        }
-        if (i < 15 + 35 + 35){
-            return 0.2f;
-        }
-        return 0.5f;
     }
 
     public float getEdgeLoad(final int id, final int currentTime) {
@@ -57,8 +57,8 @@ public class LoadManager {
     }
 
     public static class Load {
-       final int changes;
-       final float[][] edgesLoad;
+        final int changes;
+        final float[][] edgesLoad;
 
         public Load(int changes, float[][] edgesLoad) {
             this.changes = changes;
