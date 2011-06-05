@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -18,6 +19,7 @@ public class Parser {
         final FileInputStream stream = new FileInputStream(file);
         try {
             final Scanner scanner = new Scanner(stream);
+            scanner.useLocale(Locale.US);
             // Number of nodes in a network
             final int number = scanner.nextInt();
             final int edges = scanner.nextInt();
