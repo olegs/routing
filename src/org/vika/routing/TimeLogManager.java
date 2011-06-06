@@ -1,5 +1,7 @@
 package org.vika.routing;
 
+import org.vika.routing.routing.RoutingManager;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +16,8 @@ public class TimeLogManager {
     private final int myQuantumTime;
     private long myStartTime;
     public float[] deliveryTimes;
+    private final ArrayList<Integer> neuroWaitTimes = new ArrayList<Integer>();
+    private final ArrayList<Integer> deikstraWaitTimes = new ArrayList<Integer>();
     private final ArrayList<float[]> neuroStatistics = new ArrayList<float[]>();
     private final ArrayList<float[]> deikstraStatistics = new ArrayList<float[]>();
 
@@ -67,26 +71,31 @@ public class TimeLogManager {
         deliveryTimes[message.id] = deliveryTime;
     }
 
-    public void printStatistics() {
+    public void printStatistics(final RoutingManager manager) {
         printToWriter(Arrays.toString(deliveryTimes));
+        printToWriter("Wait time: " + manager.getWaitTime());
     }
 
-    public void saveNeuroStatistics() {
+    public void saveNeuroStatistics(final RoutingManager manager) {
         neuroStatistics.add(deliveryTimes);
+        neuroWaitTimes.add(manager.getWaitTime());
     }
 
-    public void saveDeikstraStatistics() {
+    public void saveDeikstraStatistics(final RoutingManager manager) {
         deikstraStatistics.add(deliveryTimes);
+        deikstraWaitTimes.add(manager.getWaitTime());
     }
 
     public void printAllStatistics() {
         printToWriter("Neuro routing delivery times");
-        for (float[] f : neuroStatistics) {
-            printToWriter(Arrays.toString(f));
+        for (int i=0;i<neuroStatistics.size();i++){
+            printToWriter(Arrays.toString(neuroStatistics.get(i)));
+            printToWriter("Wait time: " + neuroWaitTimes.get(i));
         }
         printToWriter("Deikstra routing delivery times");
-        for (float[] f : deikstraStatistics) {
-            printToWriter(Arrays.toString(f));
+        for (int i=0;i<deikstraStatistics.size();i++){
+            printToWriter(Arrays.toString(deikstraStatistics.get(i)));
+            printToWriter("Wait time: " + deikstraWaitTimes.get(i));
         }
     }
 }

@@ -13,4 +13,5 @@ public interface RoutingManager {
     public void route(final NodeAgent agent, final Message message);
     public Collection<Integer> leftMessages();
     public boolean areAllMessagesReceived();
+    public int getWaitTime();
 }

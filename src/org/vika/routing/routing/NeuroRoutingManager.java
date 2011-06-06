@@ -75,6 +75,7 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
                 }
             }
             if (maxId == -1){
+                myWaitCount.incrementAndGet();
                 myTimeManager.log("All the activation levels are below zero, waiting...");
                 myTimeManager.sleep(1);
             } else {

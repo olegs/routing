@@ -155,8 +155,8 @@ public class Main {
             Thread.sleep(1000);
         }
         timeManager.log("Routing successfully finished");
-        timeManager.printStatistics();
-        timeManager.saveNeuroStatistics();
+        timeManager.printStatistics(neuroRoutingManager);
+        timeManager.saveNeuroStatistics(neuroRoutingManager);
 
         System.gc();
         Thread.sleep(1000);
@@ -175,7 +175,7 @@ public class Main {
 			Thread.sleep(1000);
         }
         timeManager.log("Routing successfully finished");
-        timeManager.printStatistics();
-        timeManager.saveDeikstraStatistics();
+        timeManager.printStatistics(deikstraRoutingManager);
+        timeManager.saveDeikstraStatistics(deikstraRoutingManager);
     }
 }

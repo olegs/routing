@@ -165,7 +165,9 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                 final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
                 if (routingPath != null){
                     next = routingPath.get(myRoutingState[message.id]++);
-                    channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
+                    final Map<Integer, Channel> adjacentNodes = myNetwork.nodes[agentId].adjacentNodes;
+                    channel = adjacentNodes.get(next);
+                    assert adjacentNodes.containsKey(next) : "Cannot find node " + next + " for agent " + agentId;
                     channelLoad = myLoadManager.getEdgeLoad(channel.id, Math.round(myTimeManager.getCurrentTime()));
                 } else {
                     channelLoad = 0.5f;
@@ -177,6 +179,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                 agent.sendMessageAfterDelay(next, message, deliveryTime);
                 return;
             } else {
+                myWaitCount.incrementAndGet();
                 myTimeManager.log("Channel out of service reached, rebuilding routing table...");
                 myTimeManager.sleep(1);
                 reset();
