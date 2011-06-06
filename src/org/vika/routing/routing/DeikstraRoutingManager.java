@@ -150,7 +150,6 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
     public void route(final NodeAgent agent, final Message message) {
         myTimeManager.log("Request from " + agent.getId() + " to route " + message);
-        final int currentTime = Math.round(myTimeManager.getCurrentTime());
         final int agentId = agent.getId();
         if (agentId == message.receiver) {
             myTimeManager.messageReceived(message);
