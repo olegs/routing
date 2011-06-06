@@ -8,7 +8,10 @@ import org.vika.routing.network.Network;
 import org.vika.routing.network.Node;
 import org.vika.routing.network.jade.NodeAgent;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.PriorityQueue;
 
 /**
  * @author oleg
@@ -16,13 +19,10 @@ import java.util.*;
 public class DeikstraRoutingManager extends AbstractRoutingManager implements RoutingManager {
     private final Network myNetwork;
     private final LoadManager myLoadManager;
-
-    private final int myTotalMessages;
     private final TimeLogManager myTimeManager;
 
     private final Object myRoutingTableLock = new Object();
-    private volatile List<Integer>[][] myRoutingTable;
-    private volatile int[] myRoutingState;
+    private volatile int[][] myRoutingTable;
 
 
     /**
@@ -30,13 +30,12 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
      * @param network
      * @return
      */
-    private static List<Integer>[][] calculateRoutingTable(final Network network, final boolean[] channelAvailability) {
+    private static int[][] calculateRoutingTable(final Network network, final boolean[] channelAvailability) {
         final int nodesNumber = network.nodes.length;
-        @SuppressWarnings({"unchecked"})
-        final List<Integer>[][] routingTable = new List[nodesNumber][nodesNumber];
+        final int[][] routingTable = new int[nodesNumber][nodesNumber];
         // Here we build open shortest path for all the nodes using Deikstra algorithm
         for (int nodeId=0;nodeId < nodesNumber;nodeId++){
-            routingTable[nodeId][nodeId] = Collections.emptyList();
+            routingTable[nodeId][nodeId] = -1;
             // Fill distances
             final float[] distances = new float[nodesNumber];
             Arrays.fill(distances, Float.MAX_VALUE);
@@ -65,21 +64,22 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
             // Now we have all the distances and reverse paths, lets restore direct paths for routing
             for (int j = 0; j < nodesNumber;j++){
                 if (j == nodeId){
-                    routingTable[nodeId][j] = Collections.emptyList();
+                    routingTable[nodeId][j] = -1;
                 } else {
                     int current = j;
-                    ArrayList<Integer> path = new ArrayList<Integer>();
                     // In case if everything is ok, we should build full path
-                    while (current != nodeId) {
-                        path.add(0, current);
+                    while (true) {
                         // In this case we see that path doesn't exist at the moment
                         if (current == -1) {
-                            path = null;
                             break;
                         }
-                        current = reversePath[current];
+                        final int previous = reversePath[current];
+                        if (previous == nodeId){
+                            routingTable[nodeId][j] = current;
+                            break;
+                        }
+                        current = previous;
                     }
-                    routingTable[nodeId][j] = path;
                 }
             }
         }
@@ -126,15 +126,7 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         myNetwork = network;
         myLoadManager = loadManager;
         myTimeManager = timeManager;
-        myTotalMessages = totalMessages;
-        reset();
-    }
-
-    private void reset() {
         synchronized (myRoutingTableLock) {
-            // Prepare for routing
-            myRoutingState = new int[myTotalMessages];
-            Arrays.fill(myRoutingState, 0);
             myRoutingTable = calculateRoutingTable(myNetwork, getChannelAvailability(myNetwork, myLoadManager, myTimeManager));
         }
     }
@@ -162,9 +154,8 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
             Channel channel = null;
             final float channelLoad;
             synchronized (myRoutingTableLock) {
-                final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
-                if (routingPath != null){
-                    next = routingPath.get(myRoutingState[message.id]++);
+                next = myRoutingTable[agentId][message.receiver];
+                if (next != -1) {
                     final Map<Integer, Channel> adjacentNodes = myNetwork.nodes[agentId].adjacentNodes;
                     channel = adjacentNodes.get(next);
                     assert adjacentNodes.containsKey(next) : "Cannot find node " + next + " for agent " + agentId;
@@ -182,7 +173,9 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                 myWaitCount.incrementAndGet();
                 myTimeManager.log("Channel out of service reached, rebuilding routing table...");
                 myTimeManager.sleep(1);
-                reset();
+                synchronized (myRoutingTableLock) {
+                    myRoutingTable = calculateRoutingTable(myNetwork, getChannelAvailability(myNetwork, myLoadManager, myTimeManager));
+                }
             }
         }
     }
