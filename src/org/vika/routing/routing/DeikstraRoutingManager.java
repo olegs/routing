@@ -21,6 +21,8 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
     private volatile List<Integer>[][] myRoutingTable;
     private volatile int[] myRoutingState;
+    private final Object myRoutingTableLock = new Object();
+    private final int myTotalMessages;
 
     /**
      * Calculate all the routing table
@@ -118,14 +120,17 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         myNetwork = network;
         myLoadManager = loadManager;
         myTimeManager = timeManager;
-        myRoutingState = new int[totalMessages];
+        myTotalMessages = totalMessages;
         reset();
     }
 
-    private synchronized void reset() {
-        // Prepare for routing
-        Arrays.fill(myRoutingState, 0);
-        myRoutingTable = calculateRoutingTable(myNetwork, getChannelAvailability(myNetwork, myLoadManager, myTimeManager));
+    private void reset() {
+        synchronized (myRoutingTableLock) {
+            // Prepare for routing
+            myRoutingState = new int[myTotalMessages];
+            Arrays.fill(myRoutingState, 0);
+            myRoutingTable = calculateRoutingTable(myNetwork, getChannelAvailability(myNetwork, myLoadManager, myTimeManager));
+        }
     }
 
     private static boolean[] getChannelAvailability(final Network network, final LoadManager loadManager, final TimeLogManager timeLogManager) {
@@ -148,10 +153,15 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         }
         while (true) {
             // Route
-            final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
-            final int next = routingPath.get(myRoutingState[message.id]++);
-            final Channel channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
-            final float channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+            final int next;
+            final Channel channel;
+            final float channelLoad;
+            synchronized (myRoutingTableLock) {
+                final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
+                next = routingPath.get(myRoutingState[message.id]++);
+                channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
+                channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+            }
             if (channelLoad < 0.5f){
                 final float deliveryTime = channel.time + channelLoad;
                 myTimeManager.log("Sending " +  message + " to " + next + " channel time " + deliveryTime);
