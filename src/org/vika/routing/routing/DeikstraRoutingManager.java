@@ -19,15 +19,15 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
 
     private final TimeLogManager myTimeManager;
 
-    private List<Integer>[][] myRoutingTable;
-    private int[] myRoutingState;
+    private volatile List<Integer>[][] myRoutingTable;
+    private volatile int[] myRoutingState;
 
     /**
      * Calculate all the routing table
      * @param network
      * @return
      */
-    private static List<Integer>[][] calculateRoutingTable(final Network network){
+    private static List<Integer>[][] calculateRoutingTable(final Network network, final boolean[] channelAvailability) {
         final int nodesNumber = network.nodes.length;
         @SuppressWarnings({"unchecked"})
         final List<Integer>[][] routingTable = new List[nodesNumber][nodesNumber];
@@ -46,10 +46,6 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
             // Here we are going to store reverse path to each node
             final int reversePath[] = new int[nodesNumber];
             Arrays.fill(reversePath, -1);
-
-            // TODO[oleg] support channels that are out of service
-            final boolean[] channelAvailability = new boolean[network.edges];
-            Arrays.fill(channelAvailability, true);
 
             final PriorityQueue<Node> priorityQueue = new PriorityQueue<Node>(nodesNumber, new Comparator<Node>() {
                 public int compare(final Node node1, final Node node2) {
@@ -122,10 +118,23 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         myNetwork = network;
         myLoadManager = loadManager;
         myTimeManager = timeManager;
-        // Prepare for routing
-        myRoutingTable = calculateRoutingTable(myNetwork);
         myRoutingState = new int[totalMessages];
+        reset();
+    }
+
+    private synchronized void reset() {
+        // Prepare for routing
         Arrays.fill(myRoutingState, 0);
+        myRoutingTable = calculateRoutingTable(myNetwork, getChannelAvailability(myNetwork, myLoadManager, myTimeManager));
+    }
+
+    private static boolean[] getChannelAvailability(final Network network, final LoadManager loadManager, final TimeLogManager timeLogManager) {
+        final float currentTime = timeLogManager.getCurrentTime();
+        final boolean result[] = new boolean[network.edges];
+        for (int i=0;i<network.edges;i++){
+            result[i] = loadManager.getEdgeLoad(i, Math.round(currentTime)) < 0.5f;
+        }
+        return result;
     }
 
     public void route(final NodeAgent agent, final Message message) {
@@ -137,13 +146,23 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
             messageReceived(message);
             return;
         }
-        // Route
-        final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
-        final int next = routingPath.get(myRoutingState[message.id]++);
-        final Channel channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
-        final float deliveryTime = channel.time + myLoadManager.getEdgeLoad(channel.id, currentTime);
-        myTimeManager.log("Sending " +  message + " to " + next + " channel time " + deliveryTime);
-        agent.sendMessageAfterDelay(next, message, deliveryTime);
+        while (true) {
+            // Route
+            final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
+            final int next = routingPath.get(myRoutingState[message.id]++);
+            final Channel channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
+            final float channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+            if (channelLoad < 0.5f){
+                final float deliveryTime = channel.time + channelLoad;
+                myTimeManager.log("Sending " +  message + " to " + next + " channel time " + deliveryTime);
+                agent.sendMessageAfterDelay(next, message, deliveryTime);
+                return;
+            } else {
+                myTimeManager.log("Channel out of service reached, rebuilding routing table...");
+                myTimeManager.sleep(1);
+                reset();
+            }
+        }
     }
 }
 
