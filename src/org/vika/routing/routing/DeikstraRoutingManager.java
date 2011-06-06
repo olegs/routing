@@ -17,12 +17,13 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
     private final Network myNetwork;
     private final LoadManager myLoadManager;
 
+    private final int myTotalMessages;
     private final TimeLogManager myTimeManager;
 
+    private final Object myRoutingTableLock = new Object();
     private volatile List<Integer>[][] myRoutingTable;
     private volatile int[] myRoutingState;
-    private final Object myRoutingTableLock = new Object();
-    private final int myTotalMessages;
+
 
     /**
      * Calculate all the routing table
@@ -66,13 +67,18 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                 if (j == nodeId){
                     routingTable[nodeId][j] = Collections.emptyList();
                 } else {
-                int current = j;
-                final ArrayList<Integer> path = new ArrayList<Integer>();
-                // In case if everything is ok, we should build full path
-                while (current != nodeId) {
-                    path.add(0, current);
-                    current = reversePath[current];
-                }
+                    int current = j;
+                    ArrayList<Integer> path = new ArrayList<Integer>();
+                    // In case if everything is ok, we should build full path
+                    while (current != nodeId) {
+                        path.add(0, current);
+                        // In this case we see that path doesn't exist at the moment
+                        if (current == -1) {
+                            path = null;
+                            break;
+                        }
+                        current = reversePath[current];
+                    }
                     routingTable[nodeId][j] = path;
                 }
             }
@@ -153,14 +159,18 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
         }
         while (true) {
             // Route
-            final int next;
-            final Channel channel;
+            int next = -1;
+            Channel channel = null;
             final float channelLoad;
             synchronized (myRoutingTableLock) {
                 final List<Integer> routingPath = myRoutingTable[message.initiator][message.receiver];
-                next = routingPath.get(myRoutingState[message.id]++);
-                channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
-                channelLoad = myLoadManager.getEdgeLoad(channel.id, currentTime);
+                if (routingPath != null){
+                    next = routingPath.get(myRoutingState[message.id]++);
+                    channel = myNetwork.nodes[agentId].adjacentNodes.get(next);
+                    channelLoad = myLoadManager.getEdgeLoad(channel.id, Math.round(myTimeManager.getCurrentTime()));
+                } else {
+                    channelLoad = 0.5f;
+                }
             }
             if (channelLoad < 0.5f){
                 final float deliveryTime = channel.time + channelLoad;
