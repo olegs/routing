@@ -49,19 +49,16 @@ public class NodeAgent extends Agent {
 
     private void messageRecieved(final ACLMessage msg) {
         try {
-            myTimeManager.log(getLocalName()
-                    + " received: "
-                    + msg.getContentObject());
+            final Message result = (Message) msg.getContentObject();
+            myTimeManager.log(getLocalName() + " received: " + result);
+            new Thread(new Runnable() {
+                public void run() {
+                    routingManager.route(NodeAgent.this, result);
+                }
+            }).run();
         } catch (UnreadableException e) {
             System.err.println("Couldn't read the message content: " + msg);
         }
-        Message result;
-        try {
-            result = (Message) msg.getContentObject();
-        } catch (UnreadableException e) {
-            result = null;
-        }
-        routingManager.route(this, result);
     }
 
     /**
@@ -75,13 +72,11 @@ public class NodeAgent extends Agent {
             msg.setContentObject(message);
         } catch (IOException e) {
             // Ignore this
+            myTimeManager.log("Cannot create new message while sending " + message);
+            return;
         }
-        new Thread(new Runnable() {
-            public void run() {
-                myTimeManager.sleep(delay);
-                send(msg);
-            }
-        }).run();
+        myTimeManager.sleep(delay);
+        send(msg);
     }
 
     private AMSAgentDescription findAMSAgentDescription(final int id) {
