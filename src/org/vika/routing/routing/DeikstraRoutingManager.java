@@ -173,7 +173,9 @@ public class DeikstraRoutingManager extends AbstractRoutingManager implements Ro
                 myWaitCount.incrementAndGet();
                 myTimeManager.log("Channel out of service reached, rebuilding routing table...");
                 synchronized (myRoutingTableLock) {
+                    final float time = myTimeManager.getCurrentTime();
                     myRoutingTable = calculateRoutingTable(myNetwork, getChannelAvailability(myNetwork, myLoadManager, myTimeManager));
+                    myTimeManager.log("Rebuilt routing table in " + (myTimeManager.getCurrentTime() - time));
                 }
             }
         }
