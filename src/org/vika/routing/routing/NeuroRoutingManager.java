@@ -42,18 +42,28 @@ public class NeuroRoutingManager extends AbstractRoutingManager implements Routi
             return;
         }
         final Map<Integer, Channel> adjacentNodes = myNetwork.nodes[agentId].adjacentNodes;
-        // Send message to the adjacent node it receiver is one of them
-        if (adjacentNodes.containsKey(message.receiver)) {
-            // We should add non-blocking transmit message with given time
-            final float channelTime = adjacentNodes.get(message.receiver).time;
-            myTimeManager.log("Sending " +  message + " to " + message.receiver + " channel time " + channelTime);
-            agent.sendMessageAfterDelay(message.receiver, message, channelTime);
-            return;
-        }
         final Map<Integer, Float> activationLevels = new HashMap<Integer, Float>();
         final Map<Pair<Integer,Integer>, Float> wValues = myNeuroNetwork.neuroNodes[agentId].wValues;
 
         while (true) {
+            // Send message to the adjacent node it receiver is one of them
+            if (adjacentNodes.containsKey(message.receiver)) {
+                // We should add non-blocking transmit message with given time
+                final Channel channel = adjacentNodes.get(message.receiver);
+                final float channelTime = channel.time;
+                final float channelLoad = myLoadManager.getEdgeLoad(channel.id, Math.round(myTimeManager.getCurrentTime()));
+                if (channelLoad < 0.5f){
+                    myTimeManager.log("Sending " +  message + " to " + message.receiver + " channel time " + channelTime);
+                    agent.sendMessageAfterDelay(message.receiver, message, channelTime);
+                    return;
+                } else {
+                    myWaitCount.incrementAndGet();
+                    myTimeManager.log("Neighbour channel is down, waiting...");
+                    myTimeManager.sleep(1);
+                    continue;
+                }
+            }
+
             for (Map.Entry<Integer, Channel> entry : adjacentNodes.entrySet()) {
                 final int adjacentNodeId = entry.getKey();
                 final Channel channel = entry.getValue();
